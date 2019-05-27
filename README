@@ -1,0 +1,4 @@
+To run the best semi-supervised model please type: "python sentiment.py run_model" and 
+hit enter. To run another version of the model with threshold confidence parameter of 4.0,
+and produce a graph of accuracies over iterations for it, please type: "python sentiment.py graph"
+and hit enter.

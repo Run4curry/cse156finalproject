@@ -246,20 +246,20 @@ def write_gold_kaggle_file(tsvfile, outfname):
             f.write(label)
             f.write("\n")
     f.close()
-def semi_supervised_learning(unlabeled,sentiment):
+def semi_supervised_learning(unlabeled,sentiment,f,iters):
     import classify
     import numpy as np
     from sklearn.utils import shuffle
     import matplotlib.pyplot as plt
     cls = classify.train_classifier(sentiment.trainX,sentiment.trainy) # initial train with 0 unlabelled predicted
     initial_preds = cls.predict(unlabeled.X)
-    factor = 8000 # roughly about 10% of the corpus
+    factor = f # roughly about 10% of the corpus
 
   #  print(type(sentiment.trainX))
   #  print(type(sentiment.trainy))
     unlabeled.data_temp = unlabeled.data
    
-    for i in range(12):
+    for i in range(iters):
 
 
         end_index = min(len(unlabeled.data),(i*factor) + factor)
@@ -359,7 +359,24 @@ if __name__ == "__main__":
         print("in first task")
         unlabeled = read_unlabeled(tarfname, sentiment)
         print(lexicon_stuff)
-        cls = semi_supervised_learning(unlabeled, sentiment)
+        cls = semi_supervised_learning(unlabeled, sentiment,8000,12)
+        first_classification_task(unlabeled, cls, sentiment)
+    if(sys.argv[1] == "final2"):
+        print("Reading data")
+        tarfname = "data/sentiment2.tar.gz"
+        sentiment = read_files(tarfname)
+        print("\nTraining classifier")
+        import classify
+        cls = classify.train_classifier(sentiment.trainX, sentiment.trainy)
+        print("\nEvaluating")
+        classify.evaluate(sentiment.trainX, sentiment.trainy, cls, 'train')
+        classify.evaluate(sentiment.devX, sentiment.devy, cls, 'dev')
+
+        print("\nReading unlabeled data")
+        print("in first task")
+        unlabeled = read_unlabeled(tarfname, sentiment)
+        print(lexicon_stuff)
+        cls = semi_supervised_learning(unlabeled, sentiment,100,6)
         first_classification_task(unlabeled, cls, sentiment)
 
     if(sys.argv[1] == "graph"):

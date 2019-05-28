@@ -135,7 +135,7 @@ def first_classification_task(unlabeled, cls, sentiment):
     scores = cls.predict_proba(unlabeled.X)
     labels = sentiment.le.inverse_transform(yp)
     
-    coefficients=cls.coef_[0]
+    coefficients = cls.coef_[0]
     k = 40
     top_k =np.argsort(coefficients)[-k:]
     top_k_words = []
@@ -159,6 +159,10 @@ def first_classification_task(unlabeled, cls, sentiment):
         print(sentiment.tfidf_vect.get_feature_names()[i])
         bottom_k_words.append(sentiment.tfidf_vect.get_feature_names()[i])
     
+    import nltk
+    from nltk.corpus import stopwords
+    stopwords = set(stopwords.words('english'))
+
     top_set = set()
     bottom_set = set()
     # add the positive words to the positive sets
@@ -180,9 +184,10 @@ def first_classification_task(unlabeled, cls, sentiment):
                     result.append(word)
 
             print("This sentence is positive because of these words")
-            print("The probability of it being positive is", scores[i][1])
             for word in result:
-                print(word)
+                if word not in stopwords:
+                    print(word)
+            print("The probability of it being positive is", scores[i][1])
 
         elif labels[i] == "NEGATIVE" and scores[i][0] >= 0.70:
             result = []
@@ -191,9 +196,10 @@ def first_classification_task(unlabeled, cls, sentiment):
                     result.append(word)
 
             print("This sentence is negative because of these words")
-            print("The probability of it being negative is", scores[i][0])
             for word in result:
-                print(word)
+                if word not in stopwords or word == 'not' or word == 'but':
+                    print(word)
+            print("The probability of it being negative is", scores[i][0])
 
         else:
             pos_set = []
@@ -207,11 +213,13 @@ def first_classification_task(unlabeled, cls, sentiment):
             if len(pos_set) != 0:
                 print("This sentence has some positive words")
                 for word in pos_set:
-                    print(word)
+                    if word not in stopwords:
+                        print(word)
             if len(neg_set) != 0:
                 print("This sentence has some negative words")
                 for word in neg_set:
-                    print(word)
+                    if word not in stopwords or word == 'not' or word == 'but':
+                        print(word)
             print("The probability of it being negative is", scores[i][0])
             print("The probability of it being positive is", scores[i][1])
         print("---------------------------------------------------------")
@@ -336,7 +344,7 @@ if __name__ == "__main__":
         # You can't run this since you do not have the true labels
         # print "Writing gold file"
         # write_gold_kaggle_file("data/sentiment-unlabeled.tsv", "data/sentiment-gold.csv")
-    if(sys.argv[1] == "firsttask"):
+    if(sys.argv[1] == "final"):
         print("Reading data")
         tarfname = "data/sentiment.tar.gz"
         sentiment = read_files(tarfname)

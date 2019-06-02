@@ -5,10 +5,10 @@
 
 <meta charset="utf-8">
 <title>cse156 final</title>
-<divnk rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+<!-- <divnk rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
 <script src="https://code.jquery.com/jquery-3.3.1.sdivm.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/divbs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script> -->
 </head>
 
 <style type = "text/css">
@@ -31,12 +31,39 @@
   }
 </style>
 
+<script>
+function showMe(div) {
+    var chbox = document.getElementById("c1");
+    var vis = "hidden";
+    if(chbox.checked){
+      vis = "visible"
+    }
+    document.getElementById(div).style.visibility = vis;
+}
+</script>
+
 <body>
 
 <!-- <div id= "adivgn"> -->
 <h1>cse156 final</h1>
-<h2>{{5*5}}</h2>
-<p>Enter an review or email</p>
+<p>Enter a review or email</p>
+
+<div>
+{% for word in sentence %}
+  <a style="--fontsize: {{50 * (1+weight[word])}}px;
+  --color:
+  {% if weight[word] > 0 %}
+  green
+  {% elif weight[word] < 0 %}
+  red
+  {% else %}
+  black
+  {% endif %}">
+  {{word}}</a>
+{% endfor %}
+</div>
+
+<h4>overall prediction: {{prediction_type}}</h4>
 
 <form method="POST">
     Input Sentence: <br>
@@ -57,39 +84,32 @@
   negative_words: [string]
   prediction_type: POSITIVE, NEGATIVE, UNSURE
 -->
+<form>
+<input type="checkbox" id="c1" name="c1" onclick="showMe('verbose')">verbose
+</form>
 
-<div>{{type}}</div>
-{% for word in top_k_words %}
-<div>{{word}}</div>
-{% endfor %}
-<div>{{bottom_k_words}}</div>
-<div>{{sentence}}</div>
-<div>{{probabilities}}</div>
-<div>{{positive_words}}</div>
-<div>{{negative_words}}</div>
-<div>{{prediction_type}}</div>
-{% for word in sentence %}
-<div>{{weight[word]}}</div>
-{% endfor %}
-
-<div>
-{% for word in sentence %}
-  <a style="--fontsize: {{50 * (1+weight[word])}}px;
-  --color:
-  {% if weight[word] > 0 %}
-  green
-  {% elif weight[word] < 0 %}
-  red
-  {% else %}
-  black
-  {% endif %}">
-  {{word}}</a>
-{% endfor %}
+<div id="verbose" style="visibility:hidden">
+  <div>type: {{type}}</div>
+  <hr>
+  <div>top 8 words:</div>
+  {% for word in top_k_words[:8] %}
+  <div>{{word}}</div>
+  {% endfor %}
+  <hr>
+  <div>bottom 8 words:</div>
+  {% for word in bottom_k_words[:8] %}
+  <div>{{word}}</div>
+  {% endfor %}
+  <hr>
+  <div>sentence: {{sentence}}</div>
+  <div>probabilities: {{probabilities}}</div>
+  <div>positive words: {{positive_words}}</div>
+  <div>negative words: {{negative_words}}</div>
+  <div>prediction type: {{prediction_type}}</div>
+  <div>relative weights: {{weight}}</div>
 </div>
 
-<script>
 
-</script>
 
 </body>
 

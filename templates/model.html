@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+
+<meta charset="utf-8">
+<title>cse156 final</title>
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+<link rel = "stylesheet" href = "css/bootstrap.css">
+<link rel = "stylesheet" href = "css/style.css">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+<script src = "js/boostrap.min.js" rel = "stylesheet"> </script>
+<script src = "jquery.min"> </script>
+
+</head>
+
+<style type = "text/css">
+    #align
+    {
+      margin-left: 0.5cm;
+    }
+</style>
+
+<body background = null>
+
+<div id= "align">
+<h1>WhatToOrder</h1>
+
+<p>Enter an review or email</p>
+
+<form method="POST">
+    Input Sentence: <br>
+    <input placeholder="email or review" type="text" name="text" value="{{request.form.text}}">
+    <br>
+    <button type="submit" formaction="/method1">Positive/Negative</button>
+    <button type="submit" formaction="/method2">Spam/not spam</button>
+</form>
+
+<!--
+  variables:
+  type: string
+  top_k_words : [string]
+  bottom_k_words : [string]
+  sentence : string
+  probabilities: [floats]
+  positive_words : [string]
+  negative_words: [string]
+  prediction_type: POSITIVE, NEGATIVE, UNSURE
+-->
+
+<div class="row">
+  <div class="col-md-4">
+  <!-- {% if returnFoodList %} -->
+    <ul>
+    <!-- {% for food in returnFoodList %} -->
+    	<li>{{type}}</li>
+      <li>{{top_k_words}}</li>
+      <li>{{bottom_k_words}}</li>
+      <li>{{sentence}}</li>
+      <li>{{probabilities}}</li>
+      <li>{{positive_words}}</li>
+      <li>{{negative_words}}</li>
+      <li>{{prediction_type}}</li>
+    <!-- {% endfor %} -->
+    </ul>
+  <!-- {% endif %} -->
+  </div>
+</div>
+<div>
+  
+</div>
+
+</div>
+
+</body>
+
+</html>

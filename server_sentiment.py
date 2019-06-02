@@ -140,23 +140,23 @@ def first_classification_task(unlabeled, cls, sentiment):
     top_k =np.argsort(coefficients)[-k:]
     top_k_words = []
 
-    print('-'*50)
-    print('Top k=%d' %k)
-    print('-'*50)
+    #print('-'*50)
+    #print('Top k=%d' %k)
+    #print('-'*50)
 
     for i in top_k:
-        print(sentiment.tfidf_vect.get_feature_names()[i])
+        #print(sentiment.tfidf_vect.get_feature_names()[i])
         top_k_words.append(sentiment.tfidf_vect.get_feature_names()[i])
     #print(sentiment.count_ve
-    print('-'*50)
-    print('Bottom k=%d' %k)
-    print('-'*50)
+    #print('-'*50)
+    #print('Bottom k=%d' %k)
+    #print('-'*50)
     #top_k = np.argpartition(coefficients, -k)[-k:]
     bottom_k =np.argsort(coefficients)[:k]
     bottom_k_words = []
     #print(top_k)
     for i in bottom_k:
-        print(sentiment.tfidf_vect.get_feature_names()[i])
+        #print(sentiment.tfidf_vect.get_feature_names()[i])
         bottom_k_words.append(sentiment.tfidf_vect.get_feature_names()[i])
     
     import nltk
@@ -284,8 +284,8 @@ def semi_supervised_learning(unlabeled,sentiment,f,iters):
                 sentiment.train_data.append(partition[j])
 
                 sentiment.trainy = np.append(sentiment.trainy,yp[j])
-        print(len(sentiment.train_data))
-        print(sentiment.trainy.shape)
+        #print(len(sentiment.train_data))
+        #print(sentiment.trainy.shape)
         sentiment.trainX = sentiment.tfidf_vect.transform(sentiment.train_data) # transform new training data with partition addition
         cls = classify.train_classifier(sentiment.trainX,sentiment.trainy) # train a new classifier
         classify.evaluate(sentiment.devX, sentiment.devy, cls, 'dev') # evaluate on dev portion

@@ -38,7 +38,7 @@
 
 <!--
   variables:
-  type: string
+  type: FOOD, SPAM
   top_k_words : [string]
   bottom_k_words : [string]
   sentence : string
@@ -61,13 +61,16 @@
       <li>{{positive_words}}</li>
       <li>{{negative_words}}</li>
       <li>{{prediction_type}}</li>
+      {% for word in sentence.split() %}
+      <li>{{weight[word]}}</li>
+      {% endfor %}
     <!-- {% endfor %} -->
     </ul>
   <!-- {% endif %} -->
   </div>
 </div>
 <div>
-  
+
 </div>
 
 </div>

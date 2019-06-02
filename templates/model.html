@@ -5,27 +5,24 @@
 
 <meta charset="utf-8">
 <title>cse156 final</title>
-<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
-<link rel = "stylesheet" href = "css/bootstrap.css">
-<link rel = "stylesheet" href = "css/style.css">
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-<script src = "js/boostrap.min.js" rel = "stylesheet"> </script>
-<script src = "jquery.min"> </script>
-
+<!-- <divnk rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+<script src="https://code.jquery.com/jquery-3.3.1.sdivm.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/divbs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script> -->
 </head>
 
-<style type = "text/css">
-    #align
+<!-- <style type = "text/css">
+    #adivgn
     {
       margin-left: 0.5cm;
     }
-</style>
+</style> -->
 
-<body background = null>
+<body>
 
-<div id= "align">
-<h1>WhatToOrder</h1>
-
+<!-- <div id= "adivgn"> -->
+<h1>cse156 final</h1>
+<h2>{{5*5}}</h2>
 <p>Enter an review or email</p>
 
 <form method="POST">
@@ -42,38 +39,26 @@
   top_k_words : [string]
   bottom_k_words : [string]
   sentence : string
-  probabilities: [floats]
+  probabidivties: [floats]
   positive_words : [string]
   negative_words: [string]
   prediction_type: POSITIVE, NEGATIVE, UNSURE
 -->
 
-<div class="row">
-  <div class="col-md-4">
-  <!-- {% if returnFoodList %} -->
-    <ul>
-    <!-- {% for food in returnFoodList %} -->
-    	<li>{{type}}</li>
-      <li>{{top_k_words}}</li>
-      <li>{{bottom_k_words}}</li>
-      <li>{{sentence}}</li>
-      <li>{{probabilities}}</li>
-      <li>{{positive_words}}</li>
-      <li>{{negative_words}}</li>
-      <li>{{prediction_type}}</li>
-      {% for word in sentence.split() %}
-      <li>{{weight[word]}}</li>
-      {% endfor %}
-    <!-- {% endfor %} -->
-    </ul>
-  <!-- {% endif %} -->
-  </div>
-</div>
-<div>
+<div>{{type}}</div>
+{% for word in top_k_words %}
+<div>{{word}}</div>
+{% endfor %}
+<div>{{bottom_k_words}}</div>
+<div>{{sentence}}</div>
+<div>{{probabilities}}</div>
+<div>{{positive_words}}</div>
+<div>{{negative_words}}</div>
+<div>{{prediction_type}}</div>
+{% for word in sentence %}
+<div>{{weight[word]}}</div>
+{% endfor %}
 
-</div>
-
-</div>
 
 </body>
 

@@ -232,7 +232,7 @@ def first_classification_task(unlabeled, cls, sentiment):
        #     print("The probability of it being negative is", scores[i][0])
        #     print("The probability of it being positive is", scores[i][1])
        # print("---------------------------------------------------------")
-    return top_set, bottom_set, stopwords, top_k_map, bottom_k_map, coff_map
+    return top_k_words, bottom_k_words, stopwords, top_k_map, bottom_k_map, coff_map
 
 
 

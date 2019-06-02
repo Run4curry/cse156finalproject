@@ -143,15 +143,16 @@ def first_classification_task(unlabeled, cls, sentiment):
     coff_map = dict()
     top = np.argsort(coefficients)
     top_k = top[-k:]
+    feature_names = sentiment.tfidf_vect.get_feature_names()
     for i in top:
-        coff_map[sentiment.tfidf_vect.get_feature_names()[i]] = coefficients[i]
+        coff_map[feature_names[i]] = coefficients[i]
     #print('-'*50)
     #print('Top k=%d' %k)
     #print('-'*50)
     for i in top_k:
         #print(sentiment.tfidf_vect.get_feature_names()[i])
-        top_k_words.append(sentiment.tfidf_vect.get_feature_names()[i])
-        top_k_map[sentiment.tfidf_vect.get_feature_names()[i]] = coefficients[i]
+        top_k_words.append(feature_names[i])
+        top_k_map[feature_names[i]] = coefficients[i]
     #print(sentiment.count_ve
     #print('-'*50)
     #print('Bottom k=%d' %k)
@@ -164,8 +165,8 @@ def first_classification_task(unlabeled, cls, sentiment):
     #print(top_k)
     for i in bottom_k:
         #print(sentiment.tfidf_vect.get_feature_names()[i])
-        bottom_k_words.append(sentiment.tfidf_vect.get_feature_names()[i])
-        bottom_k_map[sentiment.tfidf_vect.get_feature_names()[i]] = coefficients[i]
+        bottom_k_words.append(feature_names[i])
+        bottom_k_map[feature_names[i]] = coefficients[i]
 
     import nltk
     from nltk.corpus import stopwords

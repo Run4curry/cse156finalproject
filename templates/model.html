@@ -50,14 +50,16 @@ function showMe(div) {
 
 <div>
 {% for word in sentence %}
-  <a style="--fontsize: {{50 * (1+weight[word])}}px;
-  --color:
+  <a style="
   {% if weight[word] > 0 %}
-  green
+  --fontsize: {{50 * (1+weight[word])}}px;
+  --color: green
   {% elif weight[word] < 0 %}
-  red
+  --fontsize: {{50 * (1+(weight[word]/2))}}px;
+  --color: red
   {% else %}
-  black
+  --fontsize: {{50 * (1+weight[word])}}px;
+  --color: black
   {% endif %}">
   {{word}}</a>
 {% endfor %}

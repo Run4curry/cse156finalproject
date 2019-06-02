@@ -133,7 +133,10 @@ def method1():
                 for word in neg_set:
                     if word not in stopwords or word == 'not' or word == 'but':
                         print(word)
-            prediction_type = 'UNSURE'
+            if(scores[i][0] > scores[i][1]):
+                prediction_type = 'NEGATIVE NOT CONFIDENT'
+            else:
+                prediction_type = 'POSITIVE NOT CONFIDENT'
 
     return render_template('model.html', type='FOOD', sentence=text.split(), top_k_words=top_set_one, bottom_k_words=bottom_set_one, probabilities=scores, positive_words=pos_set, negative_words=neg_set, prediction_type=prediction_type, weight=coff_map)
 
@@ -228,6 +231,10 @@ def method2():
                 for word in neg_set:
                     if word not in stopwords or word == 'not' or word == 'but':
                         print(word)
-            prediction_type = 'UNSURE'
+            
+            if(scores[i][0] > scores[i][1]):
+                prediction_type = 'NEGATIVE NOT CONFIDENT'
+            else:
+                prediction_type = 'POSITIVE NOT CONFIDENT'
 
     return render_template('model.html', type='SPAM', sentence=text.split(), top_k_words=top_set_two, bottom_k_words=bottom_set_two, probabilities=scores, positive_words=pos_set, negative_words=neg_set, prediction_type=prediction_type, weight=coff_map)

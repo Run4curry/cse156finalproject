@@ -55,6 +55,9 @@ def method1():
     labels = sentiment_one.le.inverse_transform(yp)
     print(labels)
     print(scores)
+    top_k_coeff = []
+    bottom_k_coeff = []
+    sentence_coeff = []
     # top_k_words : [string]
     # bottom_k_words : [string]
     # sentence : string
@@ -65,11 +68,18 @@ def method1():
 
     coff_map = dict()
     coff_sum = 0.0
+    for i in range(len(top_set_one)):
+        top_k_coeff.append(coff_map_one[top_set_one[i]])
+    for i in range(len(bottom_set_one)):
+        bottom_k_coeff.append(coff_map_one[bottom_set_one[i]])
+    
     for word in text.split():
         if word not in coff_map_one:
             coff_sum += 0.0
+            sentence_coeff.append(0.0)
         else:
             coff_sum += abs(coff_map_one[word])
+            sentence_coeff.append(coff_map_one[word])
 
     for word in text.split():
         if word not in coff_map_one:
@@ -83,62 +93,40 @@ def method1():
     prediction_type = None
 
     for i in range(len(labels)):
-        # confidence postive prediction
-   #     print("---------------------------------------------------------")
-    #    print(unlabeled.data[i])
-        #print(scores[i])
-        #print(labels[i])
         if labels[i] == "POSITIVE" and scores[i][1] >= 0.70:
-            pos_set = []
-            for word in unlabeled.data[i].split():
-                if word in top_set_one:
+            for word in text.split():
+                if word in top_set_one and word not in stopwords:
                     pos_set.append(word)
 
-    #        print("This sentence is positive because of these words")
-            for word in pos_set:
-                if word not in stopwords:
-                    print(word)
-    #        print("The probability of it being positive is", scores[i][1])
             prediction_type = 'POSITIVE'
 
         elif labels[i] == "NEGATIVE" and scores[i][0] >= 0.70:
-            neg_set = []
-            for word in unlabeled.data[i].split():
+            for word in text.split():
                 if word in bottom_set_one:
-                    neg_set.append(word)
+                    if word not in stopwords or word == 'not' or word == 'but':
+                        neg_set.append(word)
 
-        #    print("This sentence is negative because of these words")
-            for word in neg_set:
-                if word not in stopwords or word == 'not' or word == 'but':
-                    print(word)
-         #   print("The probability of it being negative is", scores[i][0])
             prediction_type = 'NEGATIVE'
 
         else:
-            pos_set = []
-            neg_set = []
-            for word in unlabeled.data[i].split():
-                if word in top_set_one:
+            for word in text.split():
+                if word in top_set_one and word not in stopwords:
                     pos_set.append(word)
                 if word in bottom_set_one:
-                    neg_set.append(word)
-        #    print("This sentence has an unsure prediction")
-            if len(pos_set) != 0:
-        #        print("This sentence has some positive words")
-                for word in pos_set:
-                    if word not in stopwords:
-                        print(word)
-            if len(neg_set) != 0:
-        #        print("This sentence has some negative words")
-                for word in neg_set:
                     if word not in stopwords or word == 'not' or word == 'but':
-                        print(word)
+                        neg_set.append(word)
+            
             if(scores[i][0] > scores[i][1]):
                 prediction_type = 'NEGATIVE NOT CONFIDENT'
             else:
                 prediction_type = 'POSITIVE NOT CONFIDENT'
+    print(pos_set)
+    print(neg_set)
+    print(top_k_coeff)
+    print(bottom_k_coeff)
+    print(sentence_coeff)
 
-    return render_template('model.html', type='FOOD', sentence=text.split(), top_k_words=top_set_one, bottom_k_words=bottom_set_one, probabilities=scores, positive_words=pos_set, negative_words=neg_set, prediction_type=prediction_type, weight=coff_map)
+    return render_template('model.html', type='FOOD', sentence=text.split(), top_k_words=top_set_one, bottom_k_words=bottom_set_one, probabilities=scores, positive_words=pos_set, negative_words=neg_set, prediction_type=prediction_type, weight=coff_map, top_k_coeff=top_k_coeff, bottom_k_coeff=bottom_k_coeff, sentence_coeff=sentence_coeff)
 
 @app.route("/method2",methods=['POST'])
 def method2():
@@ -160,14 +148,22 @@ def method2():
     # positive words : [string]
     # negative words: [string]
     # prediction_type: POSITIVE, NEGATIVE, UNSURE
-
+    top_k_coeff = []
+    bottom_k_coeff = []
+    sentence_coeff = []
     coff_map = dict()
     coff_sum = 0.0
+    for i in range(len(top_set_one)):
+        top_k_coeff.append(coff_map_two[top_set_two[i]])
+    for i in range(len(bottom_set_one)):
+        bottom_k_coeff.append(coff_map_two[bottom_set_two[i]])
     for word in text.split():
         if word not in coff_map_two:
             coff_sum += 0.0
+            sentence_coeff.append(0.0)
         else:
             coff_sum += abs(coff_map_two[word])
+            sentence_coeff.append(coff_map_two[word])
 
     for word in text.split():
         if word not in coff_map_two:
@@ -181,60 +177,34 @@ def method2():
     prediction_type = None
 
     for i in range(len(labels)):
-        # confidence postive prediction
-   #     print("---------------------------------------------------------")
-    #    print(unlabeled.data[i])
-        #print(scores[i])
-        #print(labels[i])
         if labels[i] == "POSITIVE" and scores[i][1] >= 0.70:
-            pos_set = []
-            for word in unlabeled.data[i].split():
-                if word in top_set_two:
+            for word in text.split():
+                if word in top_set_two and word not in stopwords:
                     pos_set.append(word)
-
-    #        print("This sentence is positive because of these words")
-            for word in pos_set:
-                if word not in stopwords:
-                    print(word)
-    #        print("The probability of it being positive is", scores[i][1])
             prediction_type = 'POSITIVE'
 
         elif labels[i] == "NEGATIVE" and scores[i][0] >= 0.70:
-            neg_set = []
-            for word in unlabeled.data[i].split():
+            for word in text.split():
                 if word in bottom_set_two:
-                    neg_set.append(word)
-
-        #    print("This sentence is negative because of these words")
-            for word in neg_set:
-                if word not in stopwords or word == 'not' or word == 'but':
-                    print(word)
-         #   print("The probability of it being negative is", scores[i][0])
+                    if word not in stopwords or word == 'not' or word == 'but':
+                        neg_set.append(word)
             prediction_type = 'NEGATIVE'
 
         else:
-            pos_set = []
-            neg_set = []
-            for word in unlabeled.data[i].split():
-                if word in top_set_two:
+            for word in text.split():
+                if word in top_set_two and word not in stopwords:
                     pos_set.append(word)
                 if word in bottom_set_two:
-                    neg_set.append(word)
-        #    print("This sentence has an unsure prediction")
-            if len(pos_set) != 0:
-        #        print("This sentence has some positive words")
-                for word in pos_set:
-                    if word not in stopwords:
-                        print(word)
-            if len(neg_set) != 0:
-        #        print("This sentence has some negative words")
-                for word in neg_set:
                     if word not in stopwords or word == 'not' or word == 'but':
-                        print(word)
+                        neg_set.append(word)
             
             if(scores[i][0] > scores[i][1]):
                 prediction_type = 'NEGATIVE NOT CONFIDENT'
             else:
                 prediction_type = 'POSITIVE NOT CONFIDENT'
+    
+    print(pos_set)
+    print(neg_set)
+    
 
-    return render_template('model.html', type='SPAM', sentence=text.split(), top_k_words=top_set_two, bottom_k_words=bottom_set_two, probabilities=scores, positive_words=pos_set, negative_words=neg_set, prediction_type=prediction_type, weight=coff_map)
+    return render_template('model.html', type='SPAM', sentence=text.split(), top_k_words=top_set_two, bottom_k_words=bottom_set_two, probabilities=scores, positive_words=pos_set, negative_words=neg_set, prediction_type=prediction_type, weight=coff_map, top_k_coeff=top_k_coeff, bottom_k_coeff=bottom_k_coeff, sentence_coeff=sentence_coeff)

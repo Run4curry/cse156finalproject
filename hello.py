@@ -135,7 +135,7 @@ def method1():
                         print(word)
             prediction_type = 'UNSURE'
 
-    return render_template('model.html', type='FOOD', sentence=text, top_k_words=top_set_one, bottom_k_words=bottom_set_one, probabilities=scores, positive_words=pos_set, negative_words=neg_set, prediction_type=prediction_type, weight=coff_map)
+    return render_template('model.html', type='FOOD', sentence=text.split(), top_k_words=top_set_one, bottom_k_words=bottom_set_one, probabilities=scores, positive_words=pos_set, negative_words=neg_set, prediction_type=prediction_type, weight=coff_map)
 
 @app.route("/method2",methods=['POST'])
 def method2():
@@ -230,4 +230,4 @@ def method2():
                         print(word)
             prediction_type = 'UNSURE'
 
-    return render_template('model.html', type='SPAM', sentence=text, top_k_words=top_set_two, bottom_k_words=bottom_set_two, probabilities=scores, positive_words=pos_set, negative_words=neg_set, prediction_type=prediction_type, weight=coff_map)
+    return render_template('model.html', type='SPAM', sentence=text.split(), top_k_words=top_set_two, bottom_k_words=bottom_set_two, probabilities=scores, positive_words=pos_set, negative_words=neg_set, prediction_type=prediction_type, weight=coff_map)

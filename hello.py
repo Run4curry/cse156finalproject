@@ -113,3 +113,83 @@ def method1():
                     if word not in stopwords or word == 'not' or word == 'but':
                         print(word)
     return "SUCCESS BITCH"
+
+@app.route("/method2",methods=['POST'])
+def method2():
+    text = request.form['text']
+    li = []
+    li.append(text)
+    print(type(sentiment_two))
+    print(type(sentiment_two.tfidf_vect))
+    data_point = sentiment_two.tfidf_vect.transform(li)
+    yp = cls.predict(data_point)
+    scores = cls.predict_proba(data_point)
+    labels = sentiment_two.le.inverse_transform(yp)
+    print(labels)
+    print(scores)
+    # top_k_words : [string]
+    # bottom_k_words : [string]
+    # sentence : string
+    # probabilities: [floats]
+    # positive words : [string]
+    # negative words: [string]
+    # prediction_type: POSITIVE, NEGATIVE, UNSURE
+
+
+    pos_set = []
+    neg_set = []
+    prediction_type = None
+    for i in range(len(labels)):
+        # confidence postive prediction
+   #     print("---------------------------------------------------------")
+    #    print(unlabeled.data[i])
+        #print(scores[i])
+        #print(labels[i])
+        if labels[i] == "POSITIVE" and scores[i][1] >= 0.70:
+            pos_set = []
+            for word in unlabeled.data[i].split():
+                if word in top_set_two:
+                    pos_set.append(word)
+
+    #        print("This sentence is positive because of these words")
+            for word in pos_set:
+                if word not in stopwords:
+                    print(word)
+    #        print("The probability of it being positive is", scores[i][1])
+            prediction_type = 'POSITIVE'
+
+        elif labels[i] == "NEGATIVE" and scores[i][0] >= 0.70:
+            neg_set = []
+            for word in unlabeled.data[i].split():
+                if word in bottom_set_two:
+                    neg_set.append(word)
+
+        #    print("This sentence is negative because of these words")
+            for word in neg_set:
+                if word not in stopwords or word == 'not' or word == 'but':
+                    print(word)
+         #   print("The probability of it being negative is", scores[i][0])
+            prediction_type = 'NEGATIVE'
+
+        else:
+            pos_set = []
+            neg_set = []
+            for word in unlabeled.data[i].split():
+                if word in top_set_two:
+                    pos_set.append(word)
+                if word in bottom_set_two:
+                    neg_set.append(word)
+        #    print("This sentence has an unsure prediction")
+            if len(pos_set) != 0:
+        #        print("This sentence has some positive words")
+                for word in pos_set:
+                    if word not in stopwords:
+                        print(word)
+            if len(neg_set) != 0:
+        #        print("This sentence has some negative words")
+                for word in neg_set:
+                    if word not in stopwords or word == 'not' or word == 'but':
+                        print(word)
+            prediction_type = 'UNSURE'
+
+    return render_template('model.html', type='SPAM', sentence=text, top_k_words=top_set_two, bottom_k_words=bottom_set_two, probabilities=scores, positive_words=pos_set, negative_words=neg_set, prediction_type=prediction_type)

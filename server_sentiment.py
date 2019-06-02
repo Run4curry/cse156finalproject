@@ -140,6 +140,10 @@ def first_classification_task(unlabeled, cls, sentiment):
     top_k =np.argsort(coefficients)[-k:]
     top_k_words = []
     top_k_map = dict()
+    coff_map = dict()
+    top = np.argsort(coefficients)
+    for i in top:
+        coff_map[sentiment.tfidf_vect.get_feature_names()[i]] = coefficients[i]
     #print('-'*50)
     #print('Top k=%d' %k)
     #print('-'*50)
@@ -225,7 +229,7 @@ def first_classification_task(unlabeled, cls, sentiment):
        #     print("The probability of it being negative is", scores[i][0])
        #     print("The probability of it being positive is", scores[i][1])
        # print("---------------------------------------------------------")
-    return top_set, bottom_set, stopwords, top_k_map, bottom_k_map
+    return top_set, bottom_set, stopwords, top_k_map, bottom_k_map, coff_map
     
 
 

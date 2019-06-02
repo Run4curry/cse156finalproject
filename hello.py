@@ -18,7 +18,7 @@ print("\nReading unlabeled data")
 print("in first task")
 unlabeled = server_sentiment.read_unlabeled(tarfname, sentiment_one)
 cls = server_sentiment.semi_supervised_learning(unlabeled, sentiment_one,8000,12)
-top_set_one, bottom_set_one, stopwords, top_k_map_one, bottom_k_map_one = server_sentiment.first_classification_task(unlabeled, cls, sentiment_one)
+top_set_one, bottom_set_one, stopwords, top_k_map_one, bottom_k_map_one, coff_map_one = server_sentiment.first_classification_task(unlabeled, cls, sentiment_one)
     
 print("Reading data")
 tarfname = "data/sentiment2.tar.gz"
@@ -34,7 +34,7 @@ print("\nReading unlabeled data")
 print("in first task")
 unlabeled = server_sentiment.read_unlabeled(tarfname, sentiment_two)
 cls_spam = server_sentiment.semi_supervised_learning(unlabeled, sentiment_two,100,6)
-top_set_two, bottom_set_two, stopwords, top_k_map_two, bottom_k_map_two = server_sentiment.first_classification_task(unlabeled, cls_spam, sentiment_two)
+top_set_two, bottom_set_two, stopwords, top_k_map_two, bottom_k_map_two, coff_map_two = server_sentiment.first_classification_task(unlabeled, cls_spam, sentiment_two)
 
   
 
@@ -63,6 +63,25 @@ def method1():
     # negative words: [string]
     # prediction_type: POSITIVE, NEGATIVE, UNSURE
 
+    coff_map = dict()
+    coff_sum = 0.0
+    for word in text.split():
+        if word not in coff_map_one:
+            coff_sum += 0.0
+        else:
+            coff_sum += abs(coff_map_one[word])
+
+    for word in text.split():
+        if word not in coff_map_one:
+            value = 0.0
+        else:
+            value = coff_map_one[word] / coff_sum
+        coff_map[word] = value
+
+    pos_set = []
+    neg_set = []
+    prediction_type = None
+
     for i in range(len(labels)):
         # confidence postive prediction
    #     print("---------------------------------------------------------")
@@ -70,28 +89,30 @@ def method1():
         #print(scores[i])
         #print(labels[i])
         if labels[i] == "POSITIVE" and scores[i][1] >= 0.70:
-            result = []
+            pos_set = []
             for word in unlabeled.data[i].split():
                 if word in top_set_one:
-                    result.append(word)
+                    pos_set.append(word)
 
     #        print("This sentence is positive because of these words")
-            for word in result:
+            for word in pos_set:
                 if word not in stopwords:
                     print(word)
     #        print("The probability of it being positive is", scores[i][1])
+            prediction_type = 'POSITIVE'
 
         elif labels[i] == "NEGATIVE" and scores[i][0] >= 0.70:
-            result = []
+            neg_set = []
             for word in unlabeled.data[i].split():
                 if word in bottom_set_one:
-                    result.append(word)
+                    neg_set.append(word)
 
         #    print("This sentence is negative because of these words")
-            for word in result:
+            for word in neg_set:
                 if word not in stopwords or word == 'not' or word == 'but':
                     print(word)
          #   print("The probability of it being negative is", scores[i][0])
+            prediction_type = 'NEGATIVE'
 
         else:
             pos_set = []
@@ -112,7 +133,10 @@ def method1():
                 for word in neg_set:
                     if word not in stopwords or word == 'not' or word == 'but':
                         print(word)
-    return "SUCCESS BITCH"
+            prediction_type = 'UNSURE'
+
+    #return render_template('model.html', type='FOOD', sentence=text, top_k_words=top_set_one, bottom_k_words=bottom_set_one, probabilities=scores, positive_words=pos_set, negative_words=neg_set, prediction_type=prediction_type, weight=coff_map)
+    return coff_map
 
 @app.route("/method2",methods=['POST'])
 def method2():
@@ -135,10 +159,25 @@ def method2():
     # negative words: [string]
     # prediction_type: POSITIVE, NEGATIVE, UNSURE
 
+    coff_map = dict()
+    coff_sum = dict()
+    for word in text.split():
+        if word not in coff_map_two:
+            coff_sum += 0.0
+        else:
+            coff_sum += abs(coff_map_two[word])
+
+    for word in text.split():
+        if word not in coff_map_two:
+            value = 0.0
+        else:
+            value = coff_map_two[word] / coff_sum
+        coff_map[word] = value
 
     pos_set = []
     neg_set = []
     prediction_type = None
+
     for i in range(len(labels)):
         # confidence postive prediction
    #     print("---------------------------------------------------------")
@@ -192,4 +231,4 @@ def method2():
                         print(word)
             prediction_type = 'UNSURE'
 
-    return render_template('model.html', type='SPAM', sentence=text, top_k_words=top_set_two, bottom_k_words=bottom_set_two, probabilities=scores, positive_words=pos_set, negative_words=neg_set, prediction_type=prediction_type)
+    return render_template('model.html', type='SPAM', sentence=text, top_k_words=top_set_two, bottom_k_words=bottom_set_two, probabilities=scores, positive_words=pos_set, negative_words=neg_set, prediction_type=prediction_type, weight=coff_map)

@@ -18,7 +18,7 @@ print("\nReading unlabeled data")
 print("in first task")
 unlabeled = server_sentiment.read_unlabeled(tarfname, sentiment_one)
 cls = server_sentiment.semi_supervised_learning(unlabeled, sentiment_one,8000,12)
-top_set_one, bottom_set_one, stopwords = server_sentiment.first_classification_task(unlabeled, cls, sentiment_one)
+top_set_one, bottom_set_one, stopwords, top_k_map_one, bottom_k_map_one = server_sentiment.first_classification_task(unlabeled, cls, sentiment_one)
     
 print("Reading data")
 tarfname = "data/sentiment2.tar.gz"
@@ -34,7 +34,7 @@ print("\nReading unlabeled data")
 print("in first task")
 unlabeled = server_sentiment.read_unlabeled(tarfname, sentiment_two)
 cls_spam = server_sentiment.semi_supervised_learning(unlabeled, sentiment_two,100,6)
-top_set_two, bottom_set_two, stopwords = server_sentiment.first_classification_task(unlabeled, cls_spam, sentiment_two)
+top_set_two, bottom_set_two, stopwords, top_k_map_two, bottom_k_map_two = server_sentiment.first_classification_task(unlabeled, cls_spam, sentiment_two)
 
   
 

@@ -139,14 +139,14 @@ def first_classification_task(unlabeled, cls, sentiment):
     k = 40
     top_k =np.argsort(coefficients)[-k:]
     top_k_words = []
-
+    top_k_map = dict()
     #print('-'*50)
     #print('Top k=%d' %k)
     #print('-'*50)
-
     for i in top_k:
         #print(sentiment.tfidf_vect.get_feature_names()[i])
         top_k_words.append(sentiment.tfidf_vect.get_feature_names()[i])
+        top_k_map[sentiment.tfidf_vect.get_feature_names()[i]] = coefficients[i]
     #print(sentiment.count_ve
     #print('-'*50)
     #print('Bottom k=%d' %k)
@@ -154,10 +154,12 @@ def first_classification_task(unlabeled, cls, sentiment):
     #top_k = np.argpartition(coefficients, -k)[-k:]
     bottom_k =np.argsort(coefficients)[:k]
     bottom_k_words = []
+    bottom_k_map = dict()
     #print(top_k)
     for i in bottom_k:
         #print(sentiment.tfidf_vect.get_feature_names()[i])
         bottom_k_words.append(sentiment.tfidf_vect.get_feature_names()[i])
+        bottom_k_map[sentiment.tfidf_vect.get_feature_names()[i]] = coefficients[i]
     
     import nltk
     from nltk.corpus import stopwords
@@ -223,7 +225,7 @@ def first_classification_task(unlabeled, cls, sentiment):
        #     print("The probability of it being negative is", scores[i][0])
        #     print("The probability of it being positive is", scores[i][1])
        # print("---------------------------------------------------------")
-    return top_set, bottom_set, stopwords
+    return top_set, bottom_set, stopwords, top_k_map, bottom_k_map
     
 
 

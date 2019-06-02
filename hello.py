@@ -19,7 +19,7 @@ print("in first task")
 unlabeled = server_sentiment.read_unlabeled(tarfname, sentiment_one)
 cls = server_sentiment.semi_supervised_learning(unlabeled, sentiment_one,8000,12)
 top_set_one, bottom_set_one, stopwords, top_k_map_one, bottom_k_map_one, coff_map_one = server_sentiment.first_classification_task(unlabeled, cls, sentiment_one)
-    
+
 print("Reading data")
 tarfname = "data/sentiment2.tar.gz"
 sentiment_two = server_sentiment.read_files(tarfname)
@@ -36,7 +36,7 @@ unlabeled = server_sentiment.read_unlabeled(tarfname, sentiment_two)
 cls_spam = server_sentiment.semi_supervised_learning(unlabeled, sentiment_two,100,6)
 top_set_two, bottom_set_two, stopwords, top_k_map_two, bottom_k_map_two, coff_map_two = server_sentiment.first_classification_task(unlabeled, cls_spam, sentiment_two)
 
-  
+
 
 @app.route("/")
 def hello():
@@ -159,7 +159,7 @@ def method2():
     # prediction_type: POSITIVE, NEGATIVE, UNSURE
 
     coff_map = dict()
-    coff_sum = dict()
+    coff_sum = 0.0
     for word in text.split():
         if word not in coff_map_two:
             coff_sum += 0.0

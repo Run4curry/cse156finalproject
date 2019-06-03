@@ -12,7 +12,7 @@
 </head>
 
 <style type = "text/css">
-  a{
+  a.sentence{
     animation-name: resize-recolor;
     animation-duration: 5s;
     animation-fill-mode: forwards;
@@ -50,7 +50,7 @@ function showMe(div) {
 
 <div>
 {% for word in sentence %}
-  <a style="
+  <a class="sentence" style="
   {% if weight[word] > 0 %}
   --fontsize: {{50 * (1+weight[word])}}px;
   --color: green
@@ -65,7 +65,12 @@ function showMe(div) {
 {% endfor %}
 </div>
 
-<h4>overall prediction: {{prediction_type}}</h4>
+<h3>overall prediction: {{prediction_type}}</h3>
+{% if prediction_type == "FOOD" %}
+<h4>predicted <a style="color:red">negative</a> with {{probabilities[0][0]}} probability, <a style="color:green">positive</a> with {{probabilities[0][1]}} probability</h4>
+{% else %}
+<h4>predicted <a style="color:red">NOT SPAM</a> with {{probabilities[0][0]}} probability, <a style="color:green">SPAM</a> with {{probabilities[0][1]}} probability</h4>
+{% endif %}
 
 <form method="POST">
     Input Sentence: <br>
@@ -93,22 +98,31 @@ function showMe(div) {
 <div id="verbose" style="visibility:hidden">
   <div>type: {{type}}</div>
   <hr>
-  <div>top 8 words:</div>
-  {% for word in top_k_words[:8] %}
-  <div>{{word}}</div>
+  <div>sentence:</div>
+  {% for i in range(sentence|length) %}
+  {{sentence[i]}}:{{sentence_coeff[i]}}&nbsp
   {% endfor %}
-  <hr>
-  <div>bottom 8 words:</div>
-  {% for word in bottom_k_words[:8] %}
-  <div>{{word}}</div>
-  {% endfor %}
-  <hr>
-  <div>sentence: {{sentence}}</div>
   <div>probabilities: {{probabilities}}</div>
   <div>positive words: {{positive_words}}</div>
   <div>negative words: {{negative_words}}</div>
   <div>prediction type: {{prediction_type}}</div>
   <div>relative weights: {{weight}}</div>
+  <hr>
+  <div>top 8 words:</div>
+  {% for i in range(1,9) %}
+  <div>{{top_k_words[-i]}}: {{top_k_coeff[-i]}}</div>
+  {% endfor %}
+  <hr>
+  <div>bottom 8 words:</div>
+  {% for i in range(8) %}
+  <div>{{bottom_k_words[i]}}: {{bottom_k_coeff[i]}}</div>
+  {% endfor %}
+
+  <!-- <hr>
+  coefficients:
+  <div>sentence: {{sentence_coeff}}</div>
+  <div>top k: {{top_k_coeff[-8:]}}</div>
+  <div>{{bottom_k_coeff[:8]}}</div> -->
 </div>
 
 

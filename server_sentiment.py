@@ -297,6 +297,7 @@ def semi_supervised_learning(unlabeled,sentiment,f,iters):
         #print(sentiment.trainy.shape)
         sentiment.trainX = sentiment.tfidf_vect.transform(sentiment.train_data) # transform new training data with partition addition
         cls = classify.train_classifier(sentiment.trainX,sentiment.trainy) # train a new classifier
+        classify.evaluate(sentiment.trainX, sentiment.trainy, cls, 'train')
         classify.evaluate(sentiment.devX, sentiment.devy, cls, 'dev') # evaluate on dev portion
 
     return cls # return this new classifier

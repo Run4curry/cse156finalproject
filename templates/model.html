@@ -9,6 +9,103 @@
 <script src="https://code.jquery.com/jquery-3.3.1.sdivm.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/divbs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script> -->
+<script src="https://canvasjs.com/assets/script/canvasjs.min.js"> </script>
+<script>
+  window.onload = function() {
+  var a = document.querySelector("#probVar").value;
+  var dataType = document.querySelector("#typeVar").value;
+  console.log(a);
+  console.log(dataType);
+  a = a.replace("[[","");
+  a = a.replace("]]","");
+  a = a.trim();
+  a = a.replace(" ","");
+  console.log(a);
+  a = a.split(" ");
+  console.log(a);
+  var neg = parseFloat(a[0]);
+  var pos = parseFloat(a[1]);
+  neg = neg * 100;
+  pos = pos * 100;
+  neg = Number(neg.toFixed(2));
+  pos = Number(pos.toFixed(2));
+  console.log(neg);
+  console.log(pos);
+  var negString = "";
+  var posString = "";
+  var chartTitle = ""
+  if(dataType == "FOOD"){
+    negString = "NEGATIVE";
+    posString = "POSITIVE";
+    chartTitle = "Probability of positive review vs. negative review";
+  }
+  else{
+    negString = "SPAM";
+    posString = "NOT SPAM";
+    chartTitle = "Probability of spam vs. no spam";
+  }
+  var chart = new CanvasJS.Chart("probabilityChart", {
+    animationEnabled: true,
+    title: {
+      text: chartTitle
+    },
+    data: [{
+      type: "pie",
+      startAngle: 240,
+      yValueFormatString: "##0.00\"%\"",
+      indexLabel: "{label} {y}",
+      dataPoints: [
+        {y: neg , label: negString},
+        {y: pos, label: posString},
+      ]
+    }]
+  });
+  chart.render();
+  var sentence = document.querySelector("#sentenceVar").value;
+  var sentenceList = document.querySelector("#sentenceList").value;
+  sentenceList = sentenceList.replace("[","");
+  sentenceList = sentenceList.replace("]","");
+  sentenceList = sentenceList.split(",");
+  for(var i = 0; i < sentenceList.length; i++){
+    word = sentenceList[i].replace("\'","");
+    word = sentenceList[i].replace("\'","");
+    word = sentenceList[i].replace(" ","");
+    sentenceList[i] = word;
+  }
+  sentence = sentence.replace("[","");
+  sentence = sentence.replace("]","");
+  sentence = sentence.split(",");
+  var coefficients = [];
+  for(var i = 0; i < sentence.length; i++){
+    coeff = sentence[i].replace(" ","");
+    coefficients.push(parseFloat(coeff));
+  }
+  console.log(coefficients);
+  var dataTwo = [];
+  for(var i = 0; i < sentenceList.length; i++){
+    dataTwo.push({y: coefficients[i], label:sentenceList[i]});
+  }
+  var chartTwo = new CanvasJS.Chart("coefficientChart", {
+	animationEnabled: true,
+	theme: "light2", // "light1", "light2", "dark1", "dark2"
+	title:{
+		text: "Unigram Coefficients for each word in the sentence"
+	},
+	axisY: {
+		title: "weight"
+	},
+	data: [{        
+		type: "column",  
+		showInLegend: true, 
+		legendMarkerColor: "grey",
+		dataPoints: dataTwo
+	}]
+});
+chartTwo.render();
+
+  
+  }
+</script>
 </head>
 
 <style type = "text/css">
@@ -66,12 +163,13 @@ function showMe(div) {
 </div>
 
 <h3>overall prediction: {{prediction_type}}</h3>
-{% if prediction_type == "FOOD" %}
+{% if type == "FOOD" %}
 <h4>predicted <a style="color:red">negative</a> with {{probabilities[0][0]}} probability, <a style="color:green">positive</a> with {{probabilities[0][1]}} probability</h4>
 {% else %}
 <h4>predicted <a style="color:red">NOT SPAM</a> with {{probabilities[0][0]}} probability, <a style="color:green">SPAM</a> with {{probabilities[0][1]}} probability</h4>
 {% endif %}
-
+<div id="probabilityChart" style="height:500px; width: 70%;"></div>
+<div id="coefficientChart" style="height:500px; width: 70%"></div>
 <form method="POST">
     Input Sentence: <br>
     <input placeholder="email or review" type="text" name="text" value="{{request.form.text}}">
@@ -93,6 +191,10 @@ function showMe(div) {
 -->
 <form>
 <input type="checkbox" id="c1" name="c1" onclick="showMe('verbose')">verbose
+<input type="hidden" id="probVar" value="{{probabilities}}">
+<input type="hidden" id="typeVar" value="{{type}}">
+<input type="hidden" id="sentenceVar" value="{{sentence_coeff}}">
+<input type="hidden" id="sentenceList" value="{{sentence}}">
 </form>
 
 <div id="verbose" style="visibility:hidden">
@@ -128,5 +230,4 @@ function showMe(div) {
 
 
 </body>
-
 </html>

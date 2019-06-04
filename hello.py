@@ -1,5 +1,6 @@
 from flask import Flask, request, render_template
 app = Flask(__name__)
+app.config['TEMPLATES_AUTO_RELOAD'] = True
 import sys
 import server_sentiment
 

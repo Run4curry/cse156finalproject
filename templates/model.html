@@ -60,6 +60,7 @@
     }]
   });
   chart.render();
+
   var coefficients = {{sentence_coeff | tojson | safe}};
   var sentenceList = {{sentence | tojson | safe}};
   console.log(coefficients);
@@ -156,7 +157,7 @@ chartTwo.render();
   }
   ]
 });
- chartThree.render();
+  chartThree.render();
 
   // do the wordcloud
   const top_k_words = {{top_k_words | tojson | safe}}
@@ -164,10 +165,12 @@ chartTwo.render();
   const top_k_coeff = {{top_k_coeff | tojson | safe}}
   const bottom_k_coeff = {{bottom_k_coeff | tojson | safe}}
 
-
+  /*
   $(function () {
     setInterval(Divs, 5000);
   });
+  */
+
   var topk = top_k_words.map((x,i) => [x,top_k_coeff[i]*10]);
   var bottomk = bottom_k_words.map((x,i) => [x,bottom_k_coeff[i]*-10]);
 
@@ -223,6 +226,63 @@ chartTwo.render();
   ]
 });
 chartFour.render();
+
+  var final_coff = coefficients.concat(b_coefficients).concat(t_coefficients);
+  
+  var final_strings = sentenceList.concat(b_List).concat(t_List);
+
+  console.log(final_strings);
+
+  var dataTwo_final = [];
+  var dataLine_final = [];
+  var colorSet_final = [];
+  var sum_final = 0;
+  for(var i = 0; i < final_strings.length; i++){
+    if(final_coff[i] > 0.0){
+      colorSet_final.push("green");
+    }
+    else{
+      colorSet_final.push("red");
+    }
+    sum_final = sum_final + final_coff[i];
+    dataTwo_final.push({y: final_coff[i], label:final_strings[i],color:colorSet_final[i]});
+    var lineColor_final = "";
+    if(sum_final < 0){
+      lineColor_final = "red";
+    }
+    else{
+      lineColor_final = "green";
+    }
+    dataLine_final.push({y: sum_final, label: final_strings[i], lineColor: lineColor_final,color:lineColor_final});
+  }
+  CanvasJS.addColorSet("unigramCoeff",colorSet_final);
+  var chartFive = new CanvasJS.Chart("coefficientChart4", {
+	animationEnabled: true,
+	theme: "light2", // "light1", "light2", "dark1", "dark2"
+	title:{
+		text: "Coefficients for all the grams in the sentence"
+	},
+  axisX: {
+    interval: 5
+  },
+	axisY: {
+		title: "weight"
+	},
+	data: [{
+		type: "column",
+		showInLegend: true,
+		legendMarkerColor: "grey",
+		dataPoints: dataTwo_final
+	},
+  {
+  type: "line",
+  dataPoints: dataLine_final,
+  }
+  ]
+});
+chartFive.render();
+
+
   if(dataType == "FOOD"){
     document.getElementById("wordCloudTitle1").textContent = "POSITIVE"
     document.getElementById("wordCloudTitle2").textContent = "NEGATIVE"
@@ -258,6 +318,7 @@ chartFour.render();
 </head>
 
 <style type = "text/css">
+  /*
   #parent {
     position: relative;
   }
@@ -272,7 +333,7 @@ chartFour.render();
   #parent div:first-child {
     display:block;
   }
-  
+  */
 
   a.sentence{
     animation-name: resize-recolor;
@@ -403,6 +464,7 @@ function showMe(div) {
   <div id="coefficientChart" style="height:500px; width: 70%"></div>
   <div id="coefficientChart2" style="height:500px; width: 70%"></div>
   <div id="coefficientChart3" style="height:500px; width: 70%"></div>
+  <div id="coefficientChart4" style="height:500px; width: 70%"></div>
 </div>
 
 <div>

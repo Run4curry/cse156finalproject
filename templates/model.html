@@ -164,19 +164,13 @@ chartTwo.render();
   const top_k_coeff = {{top_k_coeff | tojson | safe}}
   const bottom_k_coeff = {{bottom_k_coeff | tojson | safe}}
 
-<<<<<<< HEAD
   $(function () {
     setInterval(Divs, 5000);
   });
-=======
-  var topk = top_k_words.map((x,i) => [x,top_k_coeff[i]*10]);
-  var bottomk = bottom_k_words.map((x,i) => [x,bottom_k_coeff[i]*-10]);
->>>>>>> eb124f016ff879e5d6666f66a4288af4636f4bfb
 
   console.log(topk)
   console.log(bottomk)
 
-<<<<<<< HEAD
   var t_coefficients = {{trigrams_coff | tojson | safe}};
   var t_List = {{trigrams | tojson | safe}};
   console.log(t_coefficients);
@@ -225,7 +219,6 @@ chartTwo.render();
   ]
 });
 chartFour.render();
-=======
   if(dataType == "FOOD"){
     document.getElementById("wordCloudTitle1").textContent = "POSITIVE"
     document.getElementById("wordCloudTitle2").textContent = "NEGATIVE"
@@ -236,7 +229,6 @@ chartFour.render();
     document.getElementById("wordCloudTitle1").textContent = "FEMALE"
     document.getElementById("wordCloudTitle2").textContent = "MALE"
   }
->>>>>>> eb124f016ff879e5d6666f66a4288af4636f4bfb
 
   WordCloud(document.getElementById('wordcloud1'),{list:topk} );
   WordCloud(document.getElementById('wordcloud2'), {list:bottomk} );

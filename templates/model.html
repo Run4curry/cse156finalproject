@@ -174,8 +174,8 @@ chartTwo.render();
   var topk = top_k_words.map((x,i) => [x,top_k_coeff[i]*10]);
   var bottomk = bottom_k_words.map((x,i) => [x,bottom_k_coeff[i]*-10]);
 
-  console.log(topk)
-  console.log(bottomk)
+  // console.log(topk)
+  // console.log(bottomk)
 
 
   var t_coefficients = {{trigrams_coff | tojson | safe}};
@@ -213,9 +213,9 @@ chartTwo.render();
 	axisY: {
 		title: "weight"
 	},
-	data: [{        
-		type: "column",  
-		showInLegend: true, 
+	data: [{
+		type: "column",
+		showInLegend: true,
 		legendMarkerColor: "grey",
 		dataPoints: dataTwo_t
 	},
@@ -334,6 +334,7 @@ chartFive.render();
     display:block;
   }
   */
+
 
   a.sentence{
     animation-name: resize-recolor;

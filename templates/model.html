@@ -6,6 +6,7 @@
 <meta charset="utf-8">
 <title>cse156 final</title>
 <link rel="shortcut icon" href="{{ url_for('static', filename='ms-icon-70x70.png') }}">
+<script src="{{ url_for('static', filename='wordcloud2.js') }}"></script>
 <!-- <divnk rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
 <script src="https://code.jquery.com/jquery-3.3.1.sdivm.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/divbs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
@@ -143,9 +144,9 @@ chartTwo.render();
 	axisY: {
 		title: "weight"
 	},
-	data: [{        
-		type: "column",  
-		showInLegend: true, 
+	data: [{
+		type: "column",
+		showInLegend: true,
 		legendMarkerColor: "grey",
 		dataPoints: dataTwo_b
 	},
@@ -155,13 +156,27 @@ chartTwo.render();
   }
   ]
 });
-chartThree.render();
+ chartThree.render();
 
+  // do the wordcloud
+  const top_k_words = {{top_k_words | tojson | safe}}
+  const bottom_k_words = {{bottom_k_words | tojson | safe}}
+  const top_k_coeff = {{top_k_coeff | tojson | safe}}
+  const bottom_k_coeff = {{bottom_k_coeff | tojson | safe}}
+
+<<<<<<< HEAD
   $(function () {
     setInterval(Divs, 5000);
   });
+=======
+  var topk = top_k_words.map((x,i) => [x,top_k_coeff[i]*10]);
+  var bottomk = bottom_k_words.map((x,i) => [x,bottom_k_coeff[i]*-10]);
+>>>>>>> eb124f016ff879e5d6666f66a4288af4636f4bfb
 
+  console.log(topk)
+  console.log(bottomk)
 
+<<<<<<< HEAD
   var t_coefficients = {{trigrams_coff | tojson | safe}};
   var t_List = {{trigrams | tojson | safe}};
   console.log(t_coefficients);
@@ -210,8 +225,21 @@ chartThree.render();
   ]
 });
 chartFour.render();
+=======
+  if(dataType == "FOOD"){
+    document.getElementById("wordCloudTitle1").textContent = "POSITIVE"
+    document.getElementById("wordCloudTitle2").textContent = "NEGATIVE"
+  } else if(dataType == "SPAM"){
+    document.getElementById("wordCloudTitle1").textContent = "NOT SPAM"
+    document.getElementById("wordCloudTitle2").textContent = "SPAM"
+  } else{
+    document.getElementById("wordCloudTitle1").textContent = "FEMALE"
+    document.getElementById("wordCloudTitle2").textContent = "MALE"
+  }
+>>>>>>> eb124f016ff879e5d6666f66a4288af4636f4bfb
 
-  
+  WordCloud(document.getElementById('wordcloud1'),{list:topk} );
+  WordCloud(document.getElementById('wordcloud2'), {list:bottomk} );
 
   }
 </script>
@@ -380,6 +408,17 @@ function showMe(div) {
   <div id="coefficientChart3" style="height:500px; width: 70%"></div>
 </div>
 
+<div>
+  <h1>word clouds</h1>
+  <div style="display:inline-block">
+    <div id="wordCloudTitle1" style="text-align:center;font: 20px bold sans-serif;"></div>
+    <canvas height=350px width=350px style="border: 1px solid blue;" id="wordcloud1"></canvas>
+  </div>
+  <div style="display:inline-block">
+    <div id="wordCloudTitle2" style="text-align:center;font: 20px bold sans-serif;"></div>
+    <canvas height=350px width=350px style="border: 1px solid blue;" id="wordcloud2"></canvas>
+  </div>
+</div>
 <!--
   variables:
   type: FOOD, SPAM

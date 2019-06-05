@@ -389,6 +389,35 @@ if __name__ == "__main__":
         print(lexicon_stuff)
         cls = semi_supervised_learning(unlabeled, sentiment,100,6)
         first_classification_task(unlabeled, cls, sentiment)
+    
+    if(sys.argv[1] == "final3"):
+        print("Reading data")
+        tarfname = "data/sentiment3.tar.gz"
+        sentiment = read_files(tarfname)
+        print("\nTraining classifier")
+        import classify
+        cls = classify.train_classifier(sentiment.trainX, sentiment.trainy)
+        print("\nEvaluating")
+        classify.evaluate(sentiment.trainX, sentiment.trainy, cls, 'train')
+        classify.evaluate(sentiment.devX, sentiment.devy, cls, 'dev')
+
+        print("\nReading unlabeled data")
+        print("in first task")
+        unlabeled = read_unlabeled(tarfname, sentiment)
+        print(lexicon_stuff)
+        cls = semi_supervised_learning(unlabeled, sentiment,100,19)
+        first_classification_task(unlabeled, cls, sentiment)   
+        li = []
+        li.append("omg I love her so much")
+        li.append("Football is a damn good game")
+        print(type(sentiment))
+        print(type(sentiment.tfidf_vect))
+        data_point = sentiment.tfidf_vect.transform(li)
+        yp = cls.predict(data_point)
+        scores = cls.predict_proba(data_point)
+        labels = sentiment.le.inverse_transform(yp)
+        print(labels)
+        print(scores)   
 
     if(sys.argv[1] == "graph"):
         import classify

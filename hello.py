@@ -38,6 +38,23 @@ cls_spam = server_sentiment.semi_supervised_learning(unlabeled, sentiment_two,10
 top_set_two, bottom_set_two, stopwords, top_k_map_two, bottom_k_map_two, coff_map_two = server_sentiment.first_classification_task(unlabeled, cls_spam, sentiment_two)
 
 
+print("Reading data")
+tarfname = "data/sentiment3.tar.gz"
+sentiment_three = server_sentiment.read_files(tarfname)
+print("\nTraining classifier")
+import classify
+cls_gender = classify.train_classifier(sentiment_three.trainX, sentiment_three.trainy)
+print("\nEvaluating")
+classify.evaluate(sentiment_three.trainX, sentiment_three.trainy, cls_gender, 'train')
+classify.evaluate(sentiment_three.devX, sentiment_three.devy, cls_gender, 'dev')
+
+print("\nReading unlabeled data")
+print("in first task")
+unlabeled = server_sentiment.read_unlabeled(tarfname, sentiment_three)
+cls_gender = server_sentiment.semi_supervised_learning(unlabeled, sentiment_three,100,19)
+top_set_three, bottom_set_three, stopwords, top_k_map_three, bottom_k_map_three, coff_map_three = server_sentiment.first_classification_task(unlabeled, cls_gender, sentiment_three)   
+
+
 
 @app.route("/")
 def hello():
@@ -158,8 +175,8 @@ def method2():
     print(type(sentiment_two))
     print(type(sentiment_two.tfidf_vect))
     data_point = sentiment_two.tfidf_vect.transform(li)
-    yp = cls.predict(data_point)
-    scores = cls.predict_proba(data_point)
+    yp = cls_spam.predict(data_point)
+    scores = cls_spam.predict_proba(data_point)
     labels = sentiment_two.le.inverse_transform(yp)
     print(labels)
     print(scores)
@@ -175,9 +192,9 @@ def method2():
     sentence_coeff = []
     coff_map = dict()
     coff_sum = 0.0
-    for i in range(len(top_set_one)):
+    for i in range(len(top_set_two)):
         top_k_coeff.append(coff_map_two[top_set_two[i]])
-    for i in range(len(bottom_set_one)):
+    for i in range(len(bottom_set_two)):
         bottom_k_coeff.append(coff_map_two[bottom_set_two[i]])
     for word in text.split():
         if word not in coff_map_two:
@@ -200,7 +217,7 @@ def method2():
     for i in range(len(words) - 1):
         bigram = words[i] + ' ' + words[i + 1]
         bigrams.append(bigram)
-        if bigram in coff_map_one:
+        if bigram in coff_map_two:
             bigrams_coff.append(coff_map_two[bigram])
         else:
             bigrams_coff.append(0.0)
@@ -210,7 +227,7 @@ def method2():
     for i in range(len(words) - 2):
         trigram = words[i] + ' ' + words[i + 1] + ' ' + words[i + 2]
         trigrams.append(trigram)
-        if trigram in coff_map_one:
+        if trigram in coff_map_two:
             trigrams_coff.append(coff_map_two[trigram])
         else:
             trigrams_coff.append(0.0)
@@ -251,3 +268,106 @@ def method2():
     
 
     return render_template('model.html', type='SPAM', sentence=text.split(), top_k_words=top_set_two, bottom_k_words=bottom_set_two, probabilities=scores.tolist(), positive_words=pos_set, negative_words=neg_set, prediction_type=prediction_type, weight=coff_map, top_k_coeff=top_k_coeff, bottom_k_coeff=bottom_k_coeff, sentence_coeff=sentence_coeff, bigrams=bigrams, bigrams_coff=bigrams_coff, trigrams=trigrams, trigrams_coff=trigrams_coff)
+
+
+@app.route("/method3",methods=['POST'])
+def method3():
+    text = request.form['text']
+    li = []
+    li.append(text)
+    print(type(sentiment_three))
+    print(type(sentiment_three.tfidf_vect))
+    data_point = sentiment_three.tfidf_vect.transform(li)
+    yp = cls_gender.predict(data_point)
+    scores = cls_gender.predict_proba(data_point)
+    labels = sentiment_three.le.inverse_transform(yp)
+    print(labels)
+    print(scores)
+    # top_k_words : [string]
+    # bottom_k_words : [string]
+    # sentence : string
+    # probabilities: [floats]
+    # positive words : [string]
+    # negative words: [string]
+    # prediction_type: POSITIVE, NEGATIVE, UNSURE
+    top_k_coeff = []
+    bottom_k_coeff = []
+    sentence_coeff = []
+    coff_map = dict()
+    coff_sum = 0.0
+    for i in range(len(top_set_three)):
+        top_k_coeff.append(coff_map_three[top_set_three[i]])
+    for i in range(len(bottom_set_three)):
+        bottom_k_coeff.append(coff_map_three[bottom_set_three[i]])
+    for word in text.split():
+        if word not in coff_map_three:
+            coff_sum += 0.0
+            sentence_coeff.append(0.0)
+        else:
+            coff_sum += abs(coff_map_three[word])
+            sentence_coeff.append(coff_map_three[word])
+
+    for word in text.split():
+        if word not in coff_map_three:
+            value = 0.0
+        else:
+            value = coff_map_three[word] / coff_sum
+        coff_map[word] = value
+
+    words = text.split()
+    bigrams = []
+    bigrams_coff = []
+    for i in range(len(words) - 1):
+        bigram = words[i] + ' ' + words[i + 1]
+        bigrams.append(bigram)
+        if bigram in coff_map_three:
+            bigrams_coff.append(coff_map_three[bigram])
+        else:
+            bigrams_coff.append(0.0)
+
+    trigrams = []
+    trigrams_coff = []
+    for i in range(len(words) - 2):
+        trigram = words[i] + ' ' + words[i + 1] + ' ' + words[i + 2]
+        trigrams.append(trigram)
+        if trigram in coff_map_three:
+            trigrams_coff.append(coff_map_three[trigram])
+        else:
+            trigrams_coff.append(0.0)
+
+    pos_set = []
+    neg_set = []
+    prediction_type = None
+
+    for i in range(len(labels)):
+        if labels[i] == "POSITIVE" and scores[i][1] >= 0.70:
+            for word in text.split():
+                if word in top_set_three and word not in stopwords:
+                    pos_set.append(word)
+            prediction_type = 'POSITIVE'
+
+        elif labels[i] == "NEGATIVE" and scores[i][0] >= 0.70:
+            for word in text.split():
+                if word in bottom_set_three:
+                    if word not in stopwords or word == 'not' or word == 'but':
+                        neg_set.append(word)
+            prediction_type = 'NEGATIVE'
+
+        else:
+            for word in text.split():
+                if word in top_set_three and word not in stopwords:
+                    pos_set.append(word)
+                if word in bottom_set_three:
+                    if word not in stopwords or word == 'not' or word == 'but':
+                        neg_set.append(word)
+            
+            if(scores[i][0] > scores[i][1]):
+                prediction_type = 'NEGATIVE NOT CONFIDENT'
+            else:
+                prediction_type = 'POSITIVE NOT CONFIDENT'
+    
+    print(pos_set)
+    print(neg_set)
+    
+
+    return render_template('model.html', type='GENDER', sentence=text.split(), top_k_words=top_set_three, bottom_k_words=bottom_set_three, probabilities=scores.tolist(), positive_words=pos_set, negative_words=neg_set, prediction_type=prediction_type, weight=coff_map, top_k_coeff=top_k_coeff, bottom_k_coeff=bottom_k_coeff, sentence_coeff=sentence_coeff, bigrams=bigrams, bigrams_coff=bigrams_coff, trigrams=trigrams, trigrams_coff=trigrams_coff)

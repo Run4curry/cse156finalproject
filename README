@@ -1,4 +1,10 @@
-To run the best semi-supervised model please type: "python sentiment.py run_model" and 
-hit enter. To run another version of the model with threshold confidence parameter of 4.0,
-and produce a graph of accuracies over iterations for it, please type: "python sentiment.py graph"
-and hit enter.
+To run our web application please have Flask installed:
+1. pip install flask
+2. FLASK_APP=hello.py flask run
+3. Navigate to localhost:5000
+
+You may look at hello.py to see our server implementation
+as well as model.html in the templates directory to see
+the code for the frontend of this application. These
+are the two main files that we worked with for this 
+project.

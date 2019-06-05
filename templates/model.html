@@ -228,7 +228,7 @@ chartTwo.render();
 chartFour.render();
 
   var final_coff = coefficients.concat(b_coefficients).concat(t_coefficients);
-  
+
   var final_strings = sentenceList.concat(b_List).concat(t_List);
 
   console.log(final_strings);
@@ -373,15 +373,16 @@ chartFive.render();
     -o-transition: all 0.30s ease-in-out;
     outline: none;
   }
-  form button[type='submit'] {
+  button, form button[type='submit'] {
   	background: #4B99AD;
     width: 49.6%;
+    margin-bottom: 10px;
   	padding-top: 13px;
     padding-bottom: 13px;
   	border: none;
   	color: #fff;
   }
-  form button[type='submit']:hover {
+  button, form button[type='submit']:hover {
   	background: #4691A4;
   	box-shadow:none;
   	-moz-box-shadow:none;
@@ -426,21 +427,38 @@ function showMe(div) {
 
 <!-- <div id= "adivgn"> -->
 <h1>cse156 final</h1>
-
+<h3>unigrams</h3>
 <div>
-{% for word in sentence %}
+{% for i in range(sentence | length) %}
   <a class="sentence" style="
-  {% if weight[word] > 0 %}
-  --fontsize: {{50 * (1+weight[word])}}px;
+  {% if weight[i] > 0 %}
+  --fontsize: {{50 * (1+weight[i])}}px;
   --color: green
-  {% elif weight[word] < 0 %}
-  --fontsize: {{50 * (1+(weight[word]/2))}}px;
+  {% elif weight[i] < 0 %}
+  --fontsize: {{50 * (1+(weight[i]/2))}}px;
   --color: red
   {% else %}
-  --fontsize: {{50 * (1+weight[word])}}px;
+  --fontsize: {{50 * (1+weight[i])}}px;
   --color: black
   {% endif %}">
-  {{word}}</a>
+  {{sentence[i]}}</a>
+{% endfor %}
+</div>
+<h3>unigrams, bigrams, trigrams</h3>
+<div>
+{% for i in range(sentence | length) %}
+  <a class="sentence" style="
+  {% if weight2[i] > 0 %}
+  --fontsize: {{50 * (1+weight2[i])}}px;
+  --color: green
+  {% elif weight2[i] < 0 %}
+  --fontsize: {{50 * (1+(weight2[i]/2))}}px;
+  --color: red
+  {% else %}
+  --fontsize: {{50 * (1+weight2[i])}}px;
+  --color: black
+  {% endif %}">
+  {{sentence[i]}}</a>
 {% endfor %}
 </div>
 

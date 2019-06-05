@@ -52,7 +52,7 @@ print("\nReading unlabeled data")
 print("in first task")
 unlabeled = server_sentiment.read_unlabeled(tarfname, sentiment_three)
 cls_gender = server_sentiment.semi_supervised_learning(unlabeled, sentiment_three,100,19)
-top_set_three, bottom_set_three, stopwords, top_k_map_three, bottom_k_map_three, coff_map_three = server_sentiment.first_classification_task(unlabeled, cls_gender, sentiment_three)   
+top_set_three, bottom_set_three, stopwords, top_k_map_three, bottom_k_map_three, coff_map_three = server_sentiment.first_classification_task(unlabeled, cls_gender, sentiment_three)
 
 
 
@@ -84,13 +84,14 @@ def method1():
     # negative words: [string]
     # prediction_type: POSITIVE, NEGATIVE, UNSURE
 
-    coff_map = dict()
+    coff_map = []
+    coff_map2 = []
     coff_sum = 0.0
     for i in range(len(top_set_one)):
         top_k_coeff.append(coff_map_one[top_set_one[i]])
     for i in range(len(bottom_set_one)):
         bottom_k_coeff.append(coff_map_one[bottom_set_one[i]])
-    
+
     for word in text.split():
         if word not in coff_map_one:
             coff_sum += 0.0
@@ -104,7 +105,7 @@ def method1():
             value = 0.0
         else:
             value = coff_map_one[word] / coff_sum
-        coff_map[word] = value
+        coff_map.append(value)
 
     words = text.split()
     bigrams = []
@@ -113,6 +114,7 @@ def method1():
         bigram = words[i] + ' ' + words[i + 1]
         bigrams.append(bigram)
         if bigram in coff_map_one:
+            coff_sum += abs(coff_map_one[bigram])
             bigrams_coff.append(coff_map_one[bigram])
         else:
             bigrams_coff.append(0.0)
@@ -123,9 +125,88 @@ def method1():
         trigram = words[i] + ' ' + words[i + 1] + ' ' + words[i + 2]
         trigrams.append(trigram)
         if trigram in coff_map_one:
+            coff_sum += abs(coff_map_one[trigram])
             trigrams_coff.append(coff_map_one[trigram])
         else:
             trigrams_coff.append(0.0)
+
+
+# ----------------------------------
+    for i in range(len(words)):
+        # print(words[i])
+        value = 0.0
+        if words[i] not in coff_map_one:
+            value = 0.0
+            # print(words[i]," not in coff map one")
+        else:
+            value += coff_map_one[words[i]]
+            # print(words[i]," in coff map one")
+            if i == 0: #first word case
+                if len(words) > 1:
+                    bigram = words[0] + ' ' + words[1]
+                    if bigram in coff_map_one:
+                        value += (0.5*coff_map_one[bigram])
+                    if len(words) > 2:
+                        trigram = words[0] + ' ' + words[1] + ' ' + words[2]
+                        if trigram in coff_map_one:
+                            value += ((1/3)*coff_map_one[trigram])
+            elif i == 1: #second word case
+                bigram1 = words[0] + ' ' + words[1]
+                if bigram1 in coff_map_one:
+                    value += (0.5*coff_map_one[bigram1])
+                if len(words) > 2:
+                    bigram2 = words[1] + ' ' + words[2]
+                    if bigram2 in coff_map_one:
+                        value += (0.5*coff_map_one[bigram2])
+                    trigram1 = words[0] + ' ' + words[1] + ' ' + words[2]
+                    if trigram1 in coff_map_one:
+                        value += ((1/3)*coff_map_one[trigram1])
+                    if len(words) > 3:
+                        trigram2 = words[1] + ' ' + words[2] + ' ' + words[3]
+                        if trigram2 in coff_map_one:
+                            value += ((1/3)*coff_map_one[trigram2])
+            elif i == len(words) - 2: #second to last word case
+                bigram1 = words[i-1] + ' ' + words[i]
+                if bigram1 in coff_map_one:
+                    value += (0.5*coff_map_one[bigram1])
+                bigram2 = words[i] + ' ' + words[i+1]
+                if bigram2 in coff_map_one:
+                    value += (0.5*coff_map_one[bigram2])
+                trigram1 = words[i-2] + ' ' + words[i-1] + ' ' + words[i]
+                if trigram1 in coff_map_one:
+                    value += ((1/3)*coff_map_one[trigram1])
+                trigram2 = words[i-1] + ' ' + words[i] + ' ' + words[i+1]
+                if trigram2 in coff_map_one:
+                    value += ((1/3)*coff_map_one[trigram2])
+            elif i == len(words) - 1: #last word case
+                bigram1 = words[i-1] + ' ' + words[i]
+                if bigram1 in coff_map_one:
+                    value += (0.5*coff_map_one[bigram1])
+                trigram1 = words[i-2] + ' ' + words[i-1] + ' ' + words[i]
+                if trigram1 in coff_map_one:
+                    value += ((1/3)*coff_map_one[trigram1])
+            else:
+                bigram1 = words[i-1] + ' ' + words[i]
+                if bigram1 in coff_map_one:
+                    value += (0.5*coff_map_one[bigram1])
+                trigram1 = words[i-2] + ' ' + words[i-1] + ' ' + words[i]
+                if trigram1 in coff_map_one:
+                    value += ((1/3)*coff_map_one[trigram1])
+                if len(words) > i+1:
+                    bigram2 = words[i] + ' ' + words[i+1]
+                    if bigram2 in coff_map_one:
+                        value += (0.5*coff_map_one[bigram2])
+                    trigram2 = words[i-1] + ' ' + words[i] + ' ' + words[i+1]
+                    if trigram2 in coff_map_one:
+                        value += ((1/3)*coff_map_one[trigram2])
+                    if len(words) > i+2:
+                        trigram3 = words[i] + ' ' + words[i+1] + ' ' + words[i+2]
+                        if trigram3 in coff_map_one:
+                            value += ((1/3)*coff_map_one[trigram3])
+            value /= coff_sum
+        coff_map2.append(value)
+    # print("coff map:",coff_map2)
+# ----------------------------------
 
     pos_set = []
     neg_set = []
@@ -154,7 +235,7 @@ def method1():
                 if word in bottom_set_one:
                     if word not in stopwords or word == 'not' or word == 'but':
                         neg_set.append(word)
-            
+
             if(scores[i][0] > scores[i][1]):
                 prediction_type = 'NEGATIVE NOT CONFIDENT'
             else:
@@ -165,7 +246,7 @@ def method1():
     print(bottom_k_coeff)
     print(sentence_coeff)
 
-    return render_template('model.html', type='FOOD', sentence=text.split(), top_k_words=top_set_one, bottom_k_words=bottom_set_one, probabilities=scores.tolist(), positive_words=pos_set, negative_words=neg_set, prediction_type=prediction_type, weight=coff_map, top_k_coeff=top_k_coeff, bottom_k_coeff=bottom_k_coeff, sentence_coeff=sentence_coeff, bigrams=bigrams, bigrams_coff=bigrams_coff, trigrams=trigrams, trigrams_coff=trigrams_coff)
+    return render_template('model.html', type='FOOD', sentence=text.split(), top_k_words=top_set_one, bottom_k_words=bottom_set_one, probabilities=scores.tolist(), positive_words=pos_set, negative_words=neg_set, prediction_type=prediction_type, weight=coff_map, weight2=coff_map2, top_k_coeff=top_k_coeff, bottom_k_coeff=bottom_k_coeff, sentence_coeff=sentence_coeff, bigrams=bigrams, bigrams_coff=bigrams_coff, trigrams=trigrams, trigrams_coff=trigrams_coff)
 
 @app.route("/method2",methods=['POST'])
 def method2():
@@ -190,7 +271,8 @@ def method2():
     top_k_coeff = []
     bottom_k_coeff = []
     sentence_coeff = []
-    coff_map = dict()
+    coff_map = []
+    coff_map2 = []
     coff_sum = 0.0
     for i in range(len(top_set_two)):
         top_k_coeff.append(coff_map_two[top_set_two[i]])
@@ -209,7 +291,7 @@ def method2():
             value = 0.0
         else:
             value = coff_map_two[word] / coff_sum
-        coff_map[word] = value
+        coff_map.append(value)
 
     words = text.split()
     bigrams = []
@@ -231,6 +313,84 @@ def method2():
             trigrams_coff.append(coff_map_two[trigram])
         else:
             trigrams_coff.append(0.0)
+
+# ----------------------------------
+    for i in range(len(words)):
+        # print(words[i])
+        value = 0.0
+        if words[i] not in coff_map_two:
+            value = 0.0
+            # print(words[i]," not in coff map one")
+        else:
+            value += coff_map_two[words[i]]
+            # print(words[i]," in coff map one")
+            if i == 0: #first word case
+                if len(words) > 1:
+                    bigram = words[0] + ' ' + words[1]
+                    if bigram in coff_map_two:
+                        value += (0.5*coff_map_two[bigram])
+                    if len(words) > 2:
+                        trigram = words[0] + ' ' + words[1] + ' ' + words[2]
+                        if trigram in coff_map_two:
+                            value += ((1/3)*coff_map_two[trigram])
+            elif i == 1: #second word case
+                bigram1 = words[0] + ' ' + words[1]
+                if bigram1 in coff_map_two:
+                    value += (0.5*coff_map_two[bigram1])
+                if len(words) > 2:
+                    bigram2 = words[1] + ' ' + words[2]
+                    if bigram2 in coff_map_two:
+                        value += (0.5*coff_map_two[bigram2])
+                    trigram1 = words[0] + ' ' + words[1] + ' ' + words[2]
+                    if trigram1 in coff_map_two:
+                        value += ((1/3)*coff_map_two[trigram1])
+                    if len(words) > 3:
+                        trigram2 = words[1] + ' ' + words[2] + ' ' + words[3]
+                        if trigram2 in coff_map_two:
+                            value += ((1/3)*coff_map_two[trigram2])
+            elif i == len(words) - 2: #second to last word case
+                bigram1 = words[i-1] + ' ' + words[i]
+                if bigram1 in coff_map_two:
+                    value += (0.5*coff_map_two[bigram1])
+                bigram2 = words[i] + ' ' + words[i+1]
+                if bigram2 in coff_map_two:
+                    value += (0.5*coff_map_two[bigram2])
+                trigram1 = words[i-2] + ' ' + words[i-1] + ' ' + words[i]
+                if trigram1 in coff_map_two:
+                    value += ((1/3)*coff_map_two[trigram1])
+                trigram2 = words[i-1] + ' ' + words[i] + ' ' + words[i+1]
+                if trigram2 in coff_map_two:
+                    value += ((1/3)*coff_map_two[trigram2])
+            elif i == len(words) - 1: #last word case
+                bigram1 = words[i-1] + ' ' + words[i]
+                if bigram1 in coff_map_two:
+                    value += (0.5*coff_map_two[bigram1])
+                trigram1 = words[i-2] + ' ' + words[i-1] + ' ' + words[i]
+                if trigram1 in coff_map_two:
+                    value += ((1/3)*coff_map_two[trigram1])
+            else:
+                bigram1 = words[i-1] + ' ' + words[i]
+                if bigram1 in coff_map_two:
+                    value += (0.5*coff_map_two[bigram1])
+                trigram1 = words[i-2] + ' ' + words[i-1] + ' ' + words[i]
+                if trigram1 in coff_map_two:
+                    value += ((1/3)*coff_map_two[trigram1])
+                if len(words) > i+1:
+                    bigram2 = words[i] + ' ' + words[i+1]
+                    if bigram2 in coff_map_two:
+                        value += (0.5*coff_map_two[bigram2])
+                    trigram2 = words[i-1] + ' ' + words[i] + ' ' + words[i+1]
+                    if trigram2 in coff_map_two:
+                        value += ((1/3)*coff_map_two[trigram2])
+                    if len(words) > i+2:
+                        trigram3 = words[i] + ' ' + words[i+1] + ' ' + words[i+2]
+                        if trigram3 in coff_map_two:
+                            value += ((1/3)*coff_map_two[trigram3])
+            value /= coff_sum
+        coff_map2.append(value)
+    # print("coff map:",coff_map2)
+# ----------------------------------
+
 
     pos_set = []
     neg_set = []
@@ -257,17 +417,17 @@ def method2():
                 if word in bottom_set_two:
                     if word not in stopwords or word == 'not' or word == 'but':
                         neg_set.append(word)
-            
+
             if(scores[i][0] > scores[i][1]):
                 prediction_type = 'NEGATIVE NOT CONFIDENT'
             else:
                 prediction_type = 'POSITIVE NOT CONFIDENT'
-    
+
     print(pos_set)
     print(neg_set)
-    
 
-    return render_template('model.html', type='SPAM', sentence=text.split(), top_k_words=top_set_two, bottom_k_words=bottom_set_two, probabilities=scores.tolist(), positive_words=pos_set, negative_words=neg_set, prediction_type=prediction_type, weight=coff_map, top_k_coeff=top_k_coeff, bottom_k_coeff=bottom_k_coeff, sentence_coeff=sentence_coeff, bigrams=bigrams, bigrams_coff=bigrams_coff, trigrams=trigrams, trigrams_coff=trigrams_coff)
+
+    return render_template('model.html', type='SPAM', sentence=text.split(), top_k_words=top_set_two, bottom_k_words=bottom_set_two, probabilities=scores.tolist(), positive_words=pos_set, negative_words=neg_set, prediction_type=prediction_type, weight=coff_map, weight2=coff_map2, top_k_coeff=top_k_coeff, bottom_k_coeff=bottom_k_coeff, sentence_coeff=sentence_coeff, bigrams=bigrams, bigrams_coff=bigrams_coff, trigrams=trigrams, trigrams_coff=trigrams_coff)
 
 
 @app.route("/method3",methods=['POST'])
@@ -307,12 +467,12 @@ def method3():
             coff_sum += abs(coff_map_three[word])
             sentence_coeff.append(coff_map_three[word])
 
-    for word in text.split():
-        if word not in coff_map_three:
-            value = 0.0
-        else:
-            value = coff_map_three[word] / coff_sum
-        coff_map[word] = value
+    # for word in text.split():
+    #     if word not in coff_map_three:
+    #         value = 0.0
+    #     else:
+    #         value = coff_map_three[word] / coff_sum
+    #     coff_map[word] = value
 
     words = text.split()
     bigrams = []
@@ -321,6 +481,7 @@ def method3():
         bigram = words[i] + ' ' + words[i + 1]
         bigrams.append(bigram)
         if bigram in coff_map_three:
+            coff_sum += abs(coff_map_three[bigram])
             bigrams_coff.append(coff_map_three[bigram])
         else:
             bigrams_coff.append(0.0)
@@ -331,9 +492,63 @@ def method3():
         trigram = words[i] + ' ' + words[i + 1] + ' ' + words[i + 2]
         trigrams.append(trigram)
         if trigram in coff_map_three:
+            coff_sum += abs(coff_map_three[trigram])
             trigrams_coff.append(coff_map_three[trigram])
         else:
             trigrams_coff.append(0.0)
+
+    for i in range(len(words)):
+        if word not in coff_map_three:
+            value = 0.0
+        else:
+            value += coff_map_three[words[i]]
+            if i == 0: #first word case
+                if len(words) > 1:
+                    bigram = words[0] + ' ' + words[1]
+                    value += (0.5*coff_map_three[bigram])
+                    if len(words) > 2:
+                        trigram = words[0] + ' ' + words[1] + ' ' + words[2]
+                        value += ((1/3)*coff_map_three[trigram])
+            elif i == 1: #second word case
+                bigram1 = words[0] + ' ' + words[1]
+                value += (0.5*coff_map_three[bigram1])
+                if len(words) > 2:
+                    bigram2 = words[1] + ' ' + words[2]
+                    value += (0.5*coff_map_three[bigram2])
+                    trigram1 = words[1] + ' ' + words[2] + ' ' + words[3]
+                    value += ((1/3)*coff_map_three[trigram1])
+                    if len(words) > 3:
+                        trigram2 = words[2] + ' ' + words[3] + ' ' + words[4]
+                        value += ((1/3)*coff_map_three[trigram2])
+            elif i == len(words) - 2: #second to last word case
+                bigram1 = words[i-1] + ' ' + words[i]
+                value += (0.5*coff_map_three[bigram1])
+                bigram2 = words[i] + ' ' + words[i+1]
+                value += (0.5*coff_map_three[bigram2])
+                trigram1 = words[i-2] + ' ' + words[i-1] + ' ' + words[i]
+                value += ((1/3)*coff_map_three[trigram1])
+                trigram2 = words[i-1] + ' ' + words[i] + ' ' + words[i+1]
+                value += ((1/3)*coff_map_three[trigram2])
+            elif i == len(words) - 1: #last word case
+                bigram1 = words[i-1] + ' ' + words[i]
+                value += (0.5*coff_map_three[bigram1])
+                trigram1 = words[i-2] + ' ' + words[i-1] + ' ' + words[i]
+                value += ((1/3)*coff_map_three[trigram1])
+            else:
+                bigram1 = words[i-1] + ' ' + words[i]
+                value += (0.5*coff_map_three[bigram1])
+                trigram1 = words[i-2] + ' ' + words[i-1] + ' ' + words[i]
+                value += ((1/3)*coff_map_three[trigram1])
+                if len(words) > i+1:
+                    bigram2 = words[i] + ' ' + words[i+1]
+                    value += (0.5*coff_map_three[bigram2])
+                    trigram2 = words[i-1] + ' ' + words[i] + ' ' + words[i+1]
+                    value += ((1/3)*coff_map_three[trigram2])
+                    if len(words) > i+2:
+                        trigram3 = words[i] + ' ' + words[i+1] + ' ' + words[i+2]
+                        value += ((1/3)*coff_map_three[trigram3])
+            value /= coff_sum
+        coff_map[word] = value
 
     pos_set = []
     neg_set = []
@@ -360,14 +575,14 @@ def method3():
                 if word in bottom_set_three:
                     if word not in stopwords or word == 'not' or word == 'but':
                         neg_set.append(word)
-            
+
             if(scores[i][0] > scores[i][1]):
                 prediction_type = 'NEGATIVE NOT CONFIDENT'
             else:
                 prediction_type = 'POSITIVE NOT CONFIDENT'
-    
+
     print(pos_set)
     print(neg_set)
-    
+
 
     return render_template('model.html', type='GENDER', sentence=text.split(), top_k_words=top_set_three, bottom_k_words=bottom_set_three, probabilities=scores.tolist(), positive_words=pos_set, negative_words=neg_set, prediction_type=prediction_type, weight=coff_map, top_k_coeff=top_k_coeff, bottom_k_coeff=bottom_k_coeff, sentence_coeff=sentence_coeff, bigrams=bigrams, bigrams_coff=bigrams_coff, trigrams=trigrams, trigrams_coff=trigrams_coff)

@@ -37,7 +37,10 @@
     posString = "NOT SPAM";
     chartTitle = "Probability of spam vs. no spam";
   }
+  probColorSet = ["red","green"];
+  CanvasJS.addColorSet("probs",probColorSet);
   var chart = new CanvasJS.Chart("probabilityChart", {
+    colorSet: "probs",
     animationEnabled: true,
     title: {
       text: chartTitle
@@ -58,9 +61,28 @@
   var sentenceList = {{sentence | tojson | safe}};
   console.log(coefficients);
   var dataTwo = [];
+  var dataLine = [];
+  var colorSet = [];
+  var sum = 0;
   for(var i = 0; i < sentenceList.length; i++){
-    dataTwo.push({y: coefficients[i], label:sentenceList[i]});
+    if(coefficients[i] > 0.0){
+      colorSet.push("green");
+    }
+    else{
+      colorSet.push("red");
+    }
+    sum = sum + coefficients[i];
+    dataTwo.push({y: coefficients[i], label:sentenceList[i],color:colorSet[i]});
+    var lineColor = "";
+    if(sum < 0){
+      lineColor = "red";
+    }
+    else{
+      lineColor = "green";
+    }
+    dataLine.push({y: sum, label: sentenceList[i], lineColor: lineColor,color:lineColor});
   }
+  CanvasJS.addColorSet("unigramCoeff",colorSet);
   var chartTwo = new CanvasJS.Chart("coefficientChart", {
 	animationEnabled: true,
 	theme: "light2", // "light1", "light2", "dark1", "dark2"
@@ -75,7 +97,12 @@
 		showInLegend: true, 
 		legendMarkerColor: "grey",
 		dataPoints: dataTwo
-	}]
+	},
+  {
+  type: "line",
+  dataPoints: dataLine,
+  }
+  ]
 });
 chartTwo.render();
 
@@ -142,7 +169,7 @@ function showMe(div) {
 {% if type == "FOOD" %}
 <h4>predicted <a style="color:red">negative</a> with {{probabilities[0][0]}} probability, <a style="color:green">positive</a> with {{probabilities[0][1]}} probability</h4>
 {% else %}
-<h4>predicted <a style="color:red">NOT SPAM</a> with {{probabilities[0][0]}} probability, <a style="color:green">SPAM</a> with {{probabilities[0][1]}} probability</h4>
+<h4>predicted <a style="color:green">NOT SPAM</a> with {{probabilities[0][1]}} probability, <a style="color:red">SPAM</a> with {{probabilities[0][0]}} probability</h4>
 {% endif %}
 <div id="probabilityChart" style="height:500px; width: 70%;"></div>
 <div id="coefficientChart" style="height:500px; width: 70%"></div>

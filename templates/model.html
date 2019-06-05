@@ -299,20 +299,6 @@ chartFive.render();
   WordCloud(document.getElementById('wordcloud2'), {list:bottomk} );
 
   }
-</script>
-<script>
-  function Divs() {
-    var divs= $('#parent div'),
-        now = divs.filter(':visible'),
-        next = now.next().length ? now.next() : divs.first(),
-        speed = 5000;
-
-    console.log(now);
-    console.log(next)
-    now.fadeOut(speed);
-    next.fadeIn(speed);
-  }
-
 
 </script>
 </head>
@@ -335,6 +321,18 @@ chartFive.render();
   }
   */
 
+  #slider {
+    position: relative;
+  }
+
+  .slide {
+    position: absolute;
+    display: none;
+  }
+
+  .slide.active {
+    display: block;
+  }
 
   a.sentence{
     animation-name: resize-recolor;
@@ -401,16 +399,26 @@ chartFive.render();
   form input[type='checkbox']:checked {
     background: #abd;
   }
+
+  #left-arrow {
+    font-size: 30px;
+    cursor: pointer;
+  }
+
+  #right-arrow {
+    font-size: 30px;
+    cursor: pointer;
+  }
 </style>
 
 <script>
 function showMe(div) {
     var chbox = document.getElementById("c1");
-    var vis = "hidden";
+    var vis = "none";
     if(chbox.checked){
-      vis = "visible"
+      vis = "block"
     }
-    document.getElementById(div).style.visibility = vis;
+    document.getElementById(div).style.display = vis;
 }
 </script>
 
@@ -460,24 +468,16 @@ function showMe(div) {
     <button type="submit" formaction="/method2">Spam/not spam</button>
 </form>
 
-<div id="parent">
-  <div id="probabilityChart" style="height:500px; width: 70%;"></div>
-  <div id="coefficientChart" style="height:500px; width: 70%"></div>
-  <div id="coefficientChart2" style="height:500px; width: 70%"></div>
-  <div id="coefficientChart3" style="height:500px; width: 70%"></div>
-  <div id="coefficientChart4" style="height:500px; width: 70%"></div>
-</div>
-
 <div>
-  <h1>word clouds</h1>
-  <div style="display:inline-block">
-    <div id="wordCloudTitle1" style="text-align:center;font: 20px bold sans-serif;"></div>
-    <canvas height=350px width=350px style="border: 1px solid blue;" id="wordcloud1"></canvas>
-  </div>
-  <div style="display:inline-block">
-    <div id="wordCloudTitle2" style="text-align:center;font: 20px bold sans-serif;"></div>
-    <canvas height=350px width=350px style="border: 1px solid blue;" id="wordcloud2"></canvas>
-  </div>
+    <h1>word clouds</h1>
+    <div style="display:inline-block">
+      <div id="wordCloudTitle1" style="text-align:center;font: 20px bold sans-serif;"></div>
+      <canvas height=350px width=350px style="border: 1px solid blue;" id="wordcloud1"></canvas>
+    </div>
+    <div style="display:inline-block">
+      <div id="wordCloudTitle2" style="text-align:center;font: 20px bold sans-serif;"></div>
+      <canvas height=350px width=350px style="border: 1px solid blue;" id="wordcloud2"></canvas>
+    </div>
 </div>
 <!--
   variables:
@@ -498,7 +498,7 @@ function showMe(div) {
 <input type="hidden" id="sentenceList" value="{{sentence}}">
 </form>
 
-<div id="verbose" style="visibility:hidden">
+<div id="verbose" style="display:none">
   <div>type: {{type}}</div>
   <hr>
   <div>sentence:</div>
@@ -528,6 +528,41 @@ function showMe(div) {
   <div>{{bottom_k_coeff[:8]}}</div> -->
 </div>
 
+<div>
+  <button id="left-arrow">Prev</button>
+  <button id="right-arrow">Next</button>
+</div>
 
+<div id="slider">
+    <div id="probabilityChart" style="height:500px; width: 100%" class="slide active"></div>
+    <div id="coefficientChart" style="height:500px; width: 100%" class="slide"></div>
+    <div id="coefficientChart2" style="height:500px; width: 100%" class="slide"></div>
+    <div id="coefficientChart3" style="height:500px; width: 100%" class="slide"></div>
+    <div id="coefficientChart4" style="height:500px; width: 100%" class="slide"></div>
+</div>
+
+<script>
+  $('#right-arrow').click(function() {
+    var current = $('.slide.active');
+    var next = current.next();
+    current.fadeOut(300).removeClass('active');
+    next.fadeIn(300).addClass('active');
+
+    if (next.length == 0) {
+      $('.slide').first().fadeIn(300).addClass('active');
+    }
+  });
+
+  $('#left-arrow').click(function() {
+    var current = $('.slide.active');
+    var prev = current.prev();
+    current.fadeOut(300).removeClass('active');
+    prev.fadeIn(300).addClass('active');
+
+    if (prev.length == 0) {
+      $('.slide').last().fadeIn(300).addClass('active');
+    }
+  });
+</script>
 </body>
 </html>

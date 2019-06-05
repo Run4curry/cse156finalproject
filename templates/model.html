@@ -282,12 +282,6 @@ function showMe(div) {
   {% endif %}
 <h4>predicted <a style="color:green">NOT SPAM</a> with {{probabilities[0][1]}} probability, <a style="color:red">SPAM</a> with {{probabilities[0][0]}} probability</h4>
 {% endif %}
-<<<<<<< HEAD
-<div id="probabilityChart" style="height:500px; width: 70%;"></div>
-<div id="coefficientChart" style="height:500px; width: 70%"></div>
-<div id="coefficientChart2" style="height:500px; width: 70%"></div>
-=======
->>>>>>> ce7d0056bf80074ba6ed5724261348fb3cfd74bc
 <form method="POST">
     Input Sentence: <br>
     <textarea placeholder="email or review" rows=5 name="text" value="{{request.form.text}}"></textarea>
@@ -297,6 +291,7 @@ function showMe(div) {
 </form>
 <div id="probabilityChart" style="height:500px; width: 70%;"></div>
 <div id="coefficientChart" style="height:500px; width: 70%"></div>
+<div id="coefficientChart2" style="height:500px; width: 70%"></div>
 
 <!--
   variables:

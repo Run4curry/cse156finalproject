@@ -11,6 +11,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/divbs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script> -->
 <script src="https://canvasjs.com/assets/script/canvasjs.min.js"> </script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.0/jquery.min.js"></script>
 <script>
   window.onload = function() {
 
@@ -156,16 +157,98 @@ chartTwo.render();
 });
 chartThree.render();
 
+  $(function () {
+    setInterval(Divs, 5000);
+  });
 
 
+  var t_coefficients = {{trigrams_coff | tojson | safe}};
+  var t_List = {{trigrams | tojson | safe}};
+  console.log(t_coefficients);
+  var dataTwo_t = [];
+  var dataLine_t = [];
+  var colorSet_t = [];
+  var sum_t = 0;
+  for(var i = 0; i < t_List.length; i++){
+    if(t_coefficients[i] > 0.0){
+      colorSet_t.push("green");
+    }
+    else{
+      colorSet_t.push("red");
+    }
+    sum_t = sum_t + t_coefficients[i];
+    dataTwo_t.push({y: t_coefficients[i], label: t_List[i], color: colorSet_t[i]});
+    var lineColor_t = "";
+    if(sum_t < 0){
+      lineColor_t = "red";
+    }
+    else{
+      lineColor_t = "green";
+    }
+    dataLine_t.push({y: sum_t, label: t_List[i], lineColor: lineColor_t, color:lineColor_t});
+  }
+  CanvasJS.addColorSet("TrigramCoeff",colorSet_t);
+  var chartFour = new CanvasJS.Chart("coefficientChart3", {
+	animationEnabled: true,
+	theme: "light2", // "light1", "light2", "dark1", "dark2"
+	title:{
+		text: "Trigram Coefficients for each word in the sentence"
+	},
+	axisY: {
+		title: "weight"
+	},
+	data: [{        
+		type: "column",  
+		showInLegend: true, 
+		legendMarkerColor: "grey",
+		dataPoints: dataTwo_t
+	},
+  {
+  type: "line",
+  dataPoints: dataLine_t,
+  }
+  ]
+});
+chartFour.render();
 
   
 
   }
 </script>
+<script>
+  function Divs() {
+    var divs= $('#parent div'),
+        now = divs.filter(':visible'),
+        next = now.next().length ? now.next() : divs.first(),
+        speed = 5000;
+
+    console.log(now);
+    console.log(next)
+    now.fadeOut(speed);
+    next.fadeIn(speed);
+  }
+
+
+</script>
 </head>
 
 <style type = "text/css">
+  #parent {
+    position: relative;
+  }
+
+  #parent div {
+    display: none;
+    position: absolute;
+    top: 0;
+    left: 0;
+  }
+
+  #parent div:first-child {
+    display:block;
+  }
+  
+
   a.sentence{
     animation-name: resize-recolor;
     animation-duration: 5s;
@@ -289,9 +372,13 @@ function showMe(div) {
     <button type="submit" formaction="/method1">Positive/Negative</button>
     <button type="submit" formaction="/method2">Spam/not spam</button>
 </form>
-<div id="probabilityChart" style="height:500px; width: 70%;"></div>
-<div id="coefficientChart" style="height:500px; width: 70%"></div>
-<div id="coefficientChart2" style="height:500px; width: 70%"></div>
+
+<div id="parent">
+  <div id="probabilityChart" style="height:500px; width: 70%;"></div>
+  <div id="coefficientChart" style="height:500px; width: 70%"></div>
+  <div id="coefficientChart2" style="height:500px; width: 70%"></div>
+  <div id="coefficientChart3" style="height:500px; width: 70%"></div>
+</div>
 
 <!--
   variables:

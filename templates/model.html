@@ -13,7 +13,7 @@
 <script src="https://canvasjs.com/assets/script/canvasjs.min.js"> </script>
 <script>
   window.onload = function() {
-  
+
   var probs = {{probabilities|tojson|safe}};
   var dataType = {{type | tojson | safe}};
   var neg = probs[0][0];
@@ -93,9 +93,9 @@
 	axisY: {
 		title: "weight"
 	},
-	data: [{        
-		type: "column",  
-		showInLegend: true, 
+	data: [{
+		type: "column",
+		showInLegend: true,
 		legendMarkerColor: "grey",
 		dataPoints: dataTwo
 	},
@@ -107,7 +107,60 @@
 });
 chartTwo.render();
 
+  var b_coefficients = {{bigrams_coff | tojson | safe}};
+  var b_List = {{bigrams | tojson | safe}};
+  console.log(b_coefficients);
+  var dataTwo_b = [];
+  var dataLine_b = [];
+  var colorSet_b = [];
+  var sum_b = 0;
+  for(var i = 0; i < b_List.length; i++){
+    if(b_coefficients[i] > 0.0){
+      colorSet_b.push("green");
+    }
+    else{
+      colorSet_b.push("red");
+    }
+    sum_b = sum_b + b_coefficients[i];
+    dataTwo_b.push({y: b_coefficients[i], label: b_List[i], color: colorSet_b[i]});
+    var lineColor_b = "";
+    if(sum_b < 0){
+      lineColor_b = "red";
+    }
+    else{
+      lineColor_b = "green";
+    }
+    dataLine_b.push({y: sum_b, label: b_List[i], lineColor: lineColor_b, color:lineColor_b});
+  }
+  CanvasJS.addColorSet("bigramCoeff",colorSet_b);
+  var chartThree = new CanvasJS.Chart("coefficientChart2", {
+	animationEnabled: true,
+	theme: "light2", // "light1", "light2", "dark1", "dark2"
+	title:{
+		text: "bigram Coefficients for each word in the sentence"
+	},
+	axisY: {
+		title: "weight"
+	},
+	data: [{        
+		type: "column",  
+		showInLegend: true, 
+		legendMarkerColor: "grey",
+		dataPoints: dataTwo_b
+	},
+  {
+  type: "line",
+  dataPoints: dataLine_b,
+  }
+  ]
+});
+chartThree.render();
+
+
+
+
   
+
   }
 </script>
 </head>
@@ -130,6 +183,54 @@ chartTwo.render();
       color: var(--color);
     }
   }
+
+  form {
+    margin:10px auto;
+    max-width: 100%;
+    padding: 20px 12px 10px 20px;
+    font: 20px "Lucida Sans Unicode", "Lucida Grande", sans-serif;
+  }
+  form textarea {
+    width:100%;
+    font: 16px "Lucida Sans Unicode", "Lucida Grande", sans-serif;
+    box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    border:1px solid #BEBEBE;
+    padding: 7px;
+    margin:0px;
+    -webkit-transition: all 0.30s ease-in-out;
+    -moz-transition: all 0.30s ease-in-out;
+    -ms-transition: all 0.30s ease-in-out;
+    -o-transition: all 0.30s ease-in-out;
+    outline: none;
+  }
+  form button[type='submit'] {
+  	background: #4B99AD;
+    width: 49.6%;
+  	padding-top: 13px;
+    padding-bottom: 13px;
+  	border: none;
+  	color: #fff;
+  }
+  form button[type='submit']:hover {
+  	background: #4691A4;
+  	box-shadow:none;
+  	-moz-box-shadow:none;
+  	-webkit-box-shadow:none;
+    cursor: pointer;
+  }
+  form input[type='checkbox'] {
+    -webkit-appearance:none;
+    width:30px;
+    height:30px;
+    background:white;
+    border-radius:5px;
+    border:2px solid #555;
+  }
+  form input[type='checkbox']:checked {
+    background: #abd;
+  }
 </style>
 
 <script>
@@ -147,7 +248,6 @@ function showMe(div) {
 
 <!-- <div id= "adivgn"> -->
 <h1>cse156 final</h1>
-<p>Enter a review or email</p>
 
 <div>
 {% for word in sentence %}
@@ -166,21 +266,32 @@ function showMe(div) {
 {% endfor %}
 </div>
 
-<h3>overall prediction: {{prediction_type}}</h3>
+
 {% if type == "FOOD" %}
+<h3>overall prediction: {{prediction_type}}</h3>
 <h4>predicted <a style="color:red">negative</a> with {{probabilities[0][0]}} probability, <a style="color:green">positive</a> with {{probabilities[0][1]}} probability</h4>
 {% else %}
+  {% if prediction_type == "POSITIVE NOT CONFIDENT" %}
+  <h3>overall prediction: NOT SPAM NOT CONFIDENT</h3>
+  {% elif prediction_type == "POSITIVE" %}
+  <h3>overall prediction: NOT SPAM</h3>
+  {% elif prediction_type == "NEGATIVE NOT CONFIDENT" %}
+  <h3>overall prediction: SPAM NOT CONFIDENT</h3>
+  {% elif prediction_type == "NEGATIVE" %}
+  <h3>overall prediction: SPAM</h3>
+  {% endif %}
 <h4>predicted <a style="color:green">NOT SPAM</a> with {{probabilities[0][1]}} probability, <a style="color:red">SPAM</a> with {{probabilities[0][0]}} probability</h4>
 {% endif %}
-<div id="probabilityChart" style="height:500px; width: 70%;"></div>
-<div id="coefficientChart" style="height:500px; width: 70%"></div>
 <form method="POST">
     Input Sentence: <br>
-    <input placeholder="email or review" type="text" name="text" value="{{request.form.text}}">
+    <textarea placeholder="email or review" rows=5 name="text" value="{{request.form.text}}"></textarea>
     <br>
     <button type="submit" formaction="/method1">Positive/Negative</button>
     <button type="submit" formaction="/method2">Spam/not spam</button>
 </form>
+<div id="probabilityChart" style="height:500px; width: 70%;"></div>
+<div id="coefficientChart" style="height:500px; width: 70%"></div>
+<div id="coefficientChart2" style="height:500px; width: 70%"></div>
 
 <!--
   variables:

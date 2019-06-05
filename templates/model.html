@@ -107,6 +107,58 @@
 });
 chartTwo.render();
 
+  var b_coefficients = {{bigrams_coff | tojson | safe}};
+  var b_List = {{bigrams | tojson | safe}};
+  console.log(b_coefficients);
+  var dataTwo_b = [];
+  var dataLine_b = [];
+  var colorSet_b = [];
+  var sum_b = 0;
+  for(var i = 0; i < b_List.length; i++){
+    if(b_coefficients[i] > 0.0){
+      colorSet_b.push("green");
+    }
+    else{
+      colorSet_b.push("red");
+    }
+    sum_b = sum_b + b_coefficients[i];
+    dataTwo_b.push({y: b_coefficients[i], label: b_List[i], color: colorSet_b[i]});
+    var lineColor_b = "";
+    if(sum_b < 0){
+      lineColor_b = "red";
+    }
+    else{
+      lineColor_b = "green";
+    }
+    dataLine_b.push({y: sum_b, label: b_List[i], lineColor: lineColor_b, color:lineColor_b});
+  }
+  CanvasJS.addColorSet("bigramCoeff",colorSet_b);
+  var chartThree = new CanvasJS.Chart("coefficientChart2", {
+	animationEnabled: true,
+	theme: "light2", // "light1", "light2", "dark1", "dark2"
+	title:{
+		text: "bigram Coefficients for each word in the sentence"
+	},
+	axisY: {
+		title: "weight"
+	},
+	data: [{        
+		type: "column",  
+		showInLegend: true, 
+		legendMarkerColor: "grey",
+		dataPoints: dataTwo_b
+	},
+  {
+  type: "line",
+  dataPoints: dataLine_b,
+  }
+  ]
+});
+chartThree.render();
+
+
+
+
   
   }
 </script>
@@ -174,6 +226,7 @@ function showMe(div) {
 {% endif %}
 <div id="probabilityChart" style="height:500px; width: 70%;"></div>
 <div id="coefficientChart" style="height:500px; width: 70%"></div>
+<div id="coefficientChart2" style="height:500px; width: 70%"></div>
 <form method="POST">
     Input Sentence: <br>
     <input placeholder="email or review" type="text" name="text" value="{{request.form.text}}">

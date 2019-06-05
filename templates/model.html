@@ -432,10 +432,10 @@ function showMe(div) {
 {% for i in range(sentence | length) %}
   <a class="sentence" style="
   {% if weight[i] > 0 %}
-  --fontsize: {{50 * (1+weight[i])}}px;
+  --fontsize: {{50 * (1+(weight[i]*2))}}px;
   --color: green
   {% elif weight[i] < 0 %}
-  --fontsize: {{50 * (1+(weight[i]/2))}}px;
+  --fontsize: {{50 * (1+(2*weight[i]/3))}}px;
   --color: red
   {% else %}
   --fontsize: {{50 * (1+weight[i])}}px;
@@ -449,10 +449,10 @@ function showMe(div) {
 {% for i in range(sentence | length) %}
   <a class="sentence" style="
   {% if weight2[i] > 0 %}
-  --fontsize: {{50 * (1+weight2[i])}}px;
+  --fontsize: {{50 * (1+(weight2[i]*2))}}px;
   --color: green
   {% elif weight2[i] < 0 %}
-  --fontsize: {{50 * (1+(weight2[i]/2))}}px;
+  --fontsize: {{50 * (1+(2*weight2[i]/3))}}px;
   --color: red
   {% else %}
   --fontsize: {{50 * (1+weight2[i])}}px;

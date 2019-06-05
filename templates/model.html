@@ -12,19 +12,11 @@
 <script src="https://canvasjs.com/assets/script/canvasjs.min.js"> </script>
 <script>
   window.onload = function() {
-  var a = document.querySelector("#probVar").value;
-  var dataType = document.querySelector("#typeVar").value;
-  console.log(a);
-  console.log(dataType);
-  a = a.replace("[[","");
-  a = a.replace("]]","");
-  a = a.trim();
-  a = a.replace(" ","");
-  console.log(a);
-  a = a.split(" ");
-  console.log(a);
-  var neg = parseFloat(a[0]);
-  var pos = parseFloat(a[1]);
+  
+  var probs = {{probabilities|tojson|safe}};
+  var dataType = {{type | tojson | safe}};
+  var neg = probs[0][0];
+  var pos = probs[0][1];
   neg = neg * 100;
   pos = pos * 100;
   neg = Number(neg.toFixed(2));
@@ -33,7 +25,8 @@
   console.log(pos);
   var negString = "";
   var posString = "";
-  var chartTitle = ""
+  var chartTitle = "";
+
   if(dataType == "FOOD"){
     negString = "NEGATIVE";
     posString = "POSITIVE";
@@ -61,25 +54,8 @@
     }]
   });
   chart.render();
-  var sentence = document.querySelector("#sentenceVar").value;
-  var sentenceList = document.querySelector("#sentenceList").value;
-  sentenceList = sentenceList.replace("[","");
-  sentenceList = sentenceList.replace("]","");
-  sentenceList = sentenceList.split(",");
-  for(var i = 0; i < sentenceList.length; i++){
-    word = sentenceList[i].replace("\'","");
-    word = sentenceList[i].replace("\'","");
-    word = sentenceList[i].replace(" ","");
-    sentenceList[i] = word;
-  }
-  sentence = sentence.replace("[","");
-  sentence = sentence.replace("]","");
-  sentence = sentence.split(",");
-  var coefficients = [];
-  for(var i = 0; i < sentence.length; i++){
-    coeff = sentence[i].replace(" ","");
-    coefficients.push(parseFloat(coeff));
-  }
+  var coefficients = {{sentence_coeff | tojson | safe}};
+  var sentenceList = {{sentence | tojson | safe}};
   console.log(coefficients);
   var dataTwo = [];
   for(var i = 0; i < sentenceList.length; i++){
@@ -226,7 +202,6 @@ function showMe(div) {
   <div>top k: {{top_k_coeff[-8:]}}</div>
   <div>{{bottom_k_coeff[:8]}}</div> -->
 </div>
-
 
 
 </body>

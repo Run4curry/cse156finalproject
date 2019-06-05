@@ -127,7 +127,7 @@ def method1():
     print(bottom_k_coeff)
     print(sentence_coeff)
 
-    return render_template('model.html', type='FOOD', sentence=text.split(), top_k_words=top_set_one, bottom_k_words=bottom_set_one, probabilities=scores, positive_words=pos_set, negative_words=neg_set, prediction_type=prediction_type, weight=coff_map, top_k_coeff=top_k_coeff, bottom_k_coeff=bottom_k_coeff, sentence_coeff=sentence_coeff)
+    return render_template('model.html', type='FOOD', sentence=text.split(), top_k_words=top_set_one, bottom_k_words=bottom_set_one, probabilities=scores.tolist(), positive_words=pos_set, negative_words=neg_set, prediction_type=prediction_type, weight=coff_map, top_k_coeff=top_k_coeff, bottom_k_coeff=bottom_k_coeff, sentence_coeff=sentence_coeff)
 
 @app.route("/method2",methods=['POST'])
 def method2():
@@ -208,4 +208,4 @@ def method2():
     print(neg_set)
     
 
-    return render_template('model.html', type='SPAM', sentence=text.split(), top_k_words=top_set_two, bottom_k_words=bottom_set_two, probabilities=scores, positive_words=pos_set, negative_words=neg_set, prediction_type=prediction_type, weight=coff_map, top_k_coeff=top_k_coeff, bottom_k_coeff=bottom_k_coeff, sentence_coeff=sentence_coeff)
+    return render_template('model.html', type='SPAM', sentence=text.split(), top_k_words=top_set_two, bottom_k_words=bottom_set_two, probabilities=scores.tolist(), positive_words=pos_set, negative_words=neg_set, prediction_type=prediction_type, weight=coff_map, top_k_coeff=top_k_coeff, bottom_k_coeff=bottom_k_coeff, sentence_coeff=sentence_coeff)
